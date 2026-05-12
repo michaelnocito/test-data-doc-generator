@@ -1,6 +1,6 @@
 # test-data-doc-generator
 
-Generate fictional test documents and sample data for QA, OCR testing, implementation workflows, and data migration demos.
+Generate puretly fictional test documents and sample data for QA, OCR testing, implementation workflows, and data migration demos.
 
 Built for data professionals, implementation analysts, QA teams, and solution engineers who need realistic test artifacts without using real data.
 
