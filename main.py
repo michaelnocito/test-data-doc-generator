@@ -4,8 +4,19 @@ import sys
 import json
 import random
 import string
+import csv
+import io
 from pathlib import Path
 from datetime import datetime, timedelta
+
+# PDF / Word
+from reportlab.lib.pagesizes import LETTER
+from reportlab.pdfgen import canvas as rl_canvas
+from reportlab.lib import colors
+from docx import Document as DocxDocument
+from docx.shared import Pt, RGBColor
+import openpyxl
+from openpyxl.styles import Font, PatternFill, Alignment, Border, Side
 
 # ---------------------------------------------------------------------------
 # FICTIONAL DATA HELPERS
@@ -26,6 +37,13 @@ CITIES  = [
 ]
 STATES = ["AL","AZ","CA","CO","FL","GA","IL","IN","MA","MI",
           "MN","MO","NC","NJ","NV","NY","OH","OR","PA","TX","VA","WA","WI"]
+
+DISCLAIMER_FOOTER = (
+    "SAMPLE — For testing, demo, or training use only. "
+    "Not valid for legal, financial, medical, regulatory, or identity purposes."
+)
+WATERMARK = "TEST DOCUMENT"
+
 
 def rand_name():
     return f"{random.choice(FIRST_NAMES)} {random.choice(LAST_NAMES)}"
@@ -64,18 +82,10 @@ def rand_amount(lo=1000, hi=250000):
 
 
 # ---------------------------------------------------------------------------
-# DOCUMENT GENERATORS
+# HTML DOCUMENT BUILDERS (internal intermediary)
 # ---------------------------------------------------------------------------
 
-DISCLAIMER_FOOTER = (
-    "SAMPLE — For testing, demo, or training use only. "
-    "Not valid for legal, financial, medical, regulatory, or identity purposes."
-)
-WATERMARK = "TEST DOCUMENT"
-
-
 def _html_wrap(title: str, body: str) -> str:
-    """Wrap content in a clean HTML shell with watermark and footer."""
     return f"""<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -108,6 +118,121 @@ def _html_wrap(title: str, body: str) -> str:
 </body>
 </html>"""
 
+
+def _html_to_plain_lines(title: str, body_html: str) -> list[str]:
+    """Strip HTML tags to produce plain text lines for PDF/Word."""
+    import re
+    text = f"{title}\n{'=' * len(title)}\n\n"
+    text += DISCLAIMER_FOOTER + "\n\n"
+    clean = re.sub(r'<br\s*/?>', '\n', body_html, flags=re.IGNORECASE)
+    clean = re.sub(r'</tr>', '\n', clean, flags=re.IGNORECASE)
+    clean = re.sub(r'</th>|</td>', '\t', clean, flags=re.IGNORECASE)
+    clean = re.sub(r'</p>|</div>|</h[1-6]>', '\n', clean, flags=re.IGNORECASE)
+    clean = re.sub(r'<[^>]+>', '', clean)
+    import html as html_mod
+    clean = html_mod.unescape(clean)
+    text += clean
+    return [ln.rstrip() for ln in text.splitlines()]
+
+
+# ---------------------------------------------------------------------------
+# EXPORT HELPERS
+# ---------------------------------------------------------------------------
+
+def _export_pdf(out_path: str, title: str, lines: list[str]) -> None:
+    c = rl_canvas.Canvas(out_path, pagesize=LETTER)
+    width, height = LETTER
+
+    def _new_page() -> float:
+        # watermark
+        c.saveState()
+        c.setFont("Helvetica-Bold", 52)
+        c.setFillColor(colors.Color(0, 0, 0, 0.05))
+        c.translate(width / 2, height / 2)
+        c.rotate(45)
+        c.drawCentredString(0, 0, WATERMARK)
+        c.restoreState()
+        # footer
+        c.saveState()
+        c.setFont("Helvetica", 7)
+        c.setFillColor(colors.Color(0.5, 0.5, 0.5))
+        c.drawCentredString(width / 2, 24, DISCLAIMER_FOOTER)
+        c.restoreState()
+        c.setFont("Helvetica", 10)
+        return height - 60
+
+    y = _new_page()
+    for line in lines:
+        if y < 48:
+            c.showPage()
+            y = _new_page()
+        # tab-separated → spaced out
+        display = line.replace('\t', '    ')
+        c.drawString(48, y, display[:120])
+        y -= 14
+    c.save()
+
+
+def _export_docx(out_path: str, title: str, lines: list[str]) -> None:
+    doc = DocxDocument()
+
+    # Footer disclaimer
+    for section in doc.sections:
+        footer_para = section.footer.paragraphs[0]
+        footer_para.text = DISCLAIMER_FOOTER
+        for run in footer_para.runs:
+            run.font.size = Pt(8)
+            run.font.color.rgb = RGBColor(0x88, 0x88, 0x88)
+
+    # Watermark notice at top
+    wm = doc.add_paragraph()
+    wm_run = wm.add_run(f"[ {WATERMARK} ]")
+    wm_run.font.size = Pt(9)
+    wm_run.font.color.rgb = RGBColor(0xCC, 0xCC, 0xCC)
+
+    # Title
+    t = doc.add_heading(title, level=1)
+    t.runs[0].font.size = Pt(16)
+
+    # Body
+    for line in lines[2:]:  # skip title we already added
+        stripped = line.strip()
+        if not stripped:
+            doc.add_paragraph("")
+            continue
+        if line.startswith("==") or line.startswith("--"):
+            continue
+        if stripped.isupper() and len(stripped) < 60:
+            h = doc.add_heading(stripped, level=2)
+            h.runs[0].font.size = Pt(12)
+        else:
+            p = doc.add_paragraph(stripped.replace('\t', '    '))
+            p.runs[0].font.size = Pt(10) if p.runs else None
+
+    doc.save(out_path)
+
+
+def _write_doc(out_path: str, fmt: str, title: str, body_html: str) -> None:
+    if fmt == "html":
+        Path(out_path).write_text(_html_wrap(title, body_html), encoding="utf-8")
+    elif fmt == "pdf":
+        lines = _html_to_plain_lines(title, body_html)
+        _export_pdf(out_path, title, lines)
+    elif fmt == "docx":
+        lines = _html_to_plain_lines(title, body_html)
+        _export_docx(out_path, title, lines)
+    elif fmt == "txt":
+        lines = _html_to_plain_lines(title, body_html)
+        Path(out_path).write_text("\n".join(lines), encoding="utf-8")
+
+
+def _ext(fmt: str) -> str:
+    return {"html": ".html", "pdf": ".pdf", "docx": ".docx", "txt": ".txt"}.get(fmt, ".html")
+
+
+# ---------------------------------------------------------------------------
+# DOCUMENT GENERATORS
+# ---------------------------------------------------------------------------
 
 def generate_invoice(config: dict) -> dict:
     vendor   = config.get("vendorName") or rand_company()
@@ -152,7 +277,7 @@ def generate_invoice(config: dict) -> dict:
       <tr><td colspan="3"><strong>Total</strong></td><td><strong>${total:,.2f}</strong></td></tr>
     </table>
     """
-    return {"filename": f"{inv_num}.html", "html": _html_wrap(f"Invoice {inv_num}", body)}
+    return {"base": inv_num, "title": f"Invoice {inv_num}", "html": body}
 
 
 def generate_contract(config: dict) -> dict:
@@ -192,7 +317,7 @@ def generate_contract(config: dict) -> dict:
       <tr><td>{rand_name()}<br>{buyer}</td><td>{rand_name()}<br>{vendor}</td></tr>
     </table>
     """
-    return {"filename": f"{doc_id}_contract.html", "html": _html_wrap(f"{contract_type} {doc_id}", body)}
+    return {"base": f"{doc_id}_contract", "title": f"{contract_type} {doc_id}", "html": body}
 
 
 def generate_intake_form(config: dict) -> dict:
@@ -226,7 +351,7 @@ def generate_intake_form(config: dict) -> dict:
     <p>I certify the information above is accurate to the best of my knowledge.</p>
     <p>Signature: ______________________________ &nbsp; Date: ___________</p>
     """
-    return {"filename": f"{doc_id}_intake.html", "html": _html_wrap(f"Intake Form {doc_id}", body)}
+    return {"base": f"{doc_id}_intake", "title": f"Intake Form {doc_id}", "html": body}
 
 
 def generate_sop(config: dict) -> dict:
@@ -261,7 +386,7 @@ def generate_sop(config: dict) -> dict:
     <h2>Review Schedule</h2>
     <p>This SOP shall be reviewed annually. Last reviewed: {rand_date(-365, 0)}.</p>
     """
-    return {"filename": f"{doc_id}_sop.html", "html": _html_wrap(f"SOP {doc_id}", body)}
+    return {"base": f"{doc_id}_sop", "title": f"SOP {doc_id}", "html": body}
 
 
 def generate_offer_letter(config: dict) -> dict:
@@ -287,11 +412,10 @@ def generate_offer_letter(config: dict) -> dict:
       <tr><td>Work Location</td><td>{random.choice(["On-site","Remote","Hybrid"])}</td></tr>
     </table>
     <p>Please sign and return this letter by <strong>{rand_date(3,10)}</strong> to confirm your acceptance.</p>
-    <p>We look forward to welcoming you to the team.</p>
     <p>Sincerely,<br><strong>{rand_name()}</strong><br>Human Resources, {org}</p>
     <p style="margin-top:32px">Accepted: ______________________________ &nbsp; Date: ___________</p>
     """
-    return {"filename": f"{doc_id}_offer.html", "html": _html_wrap(f"Offer Letter {doc_id}", body)}
+    return {"base": f"{doc_id}_offer", "title": f"Offer Letter {doc_id}", "html": body}
 
 
 def generate_purchase_order(config: dict) -> dict:
@@ -333,10 +457,9 @@ def generate_purchase_order(config: dict) -> dict:
     </table>
     <p>Authorized by: ______________________________ &nbsp; Date: ___________</p>
     """
-    return {"filename": f"{doc_id}_po.html", "html": _html_wrap(f"PO {doc_id}", body)}
+    return {"base": f"{doc_id}_po", "title": f"PO {doc_id}", "html": body}
 
 
-# Map UI doc type keys to generator functions
 DOC_GENERATORS = {
     "invoice":        generate_invoice,
     "contract":       generate_contract,
@@ -348,32 +471,301 @@ DOC_GENERATORS = {
 
 
 # ---------------------------------------------------------------------------
+# DATA FILE GENERATORS
+# ---------------------------------------------------------------------------
+
+def _make_header_style(wb):
+    return {
+        "font": Font(bold=True, color="FFFFFF", size=11),
+        "fill": PatternFill("solid", fgColor="2E5D9E"),
+        "alignment": Alignment(horizontal="center", wrap_text=True),
+        "border": Border(
+            bottom=Side(style="thin", color="FFFFFF"),
+            right=Side(style="thin", color="FFFFFF"),
+        ),
+    }
+
+def _apply_header(ws, headers):
+    style = _make_header_style(None)
+    for col, h in enumerate(headers, 1):
+        cell = ws.cell(row=1, column=col, value=h)
+        cell.font = style["font"]
+        cell.fill = style["fill"]
+        cell.alignment = style["alignment"]
+
+def _disclaimer_row(ws, col_count):
+    ws.insert_rows(1)
+    ws.merge_cells(start_row=1, start_column=1, end_row=1, end_column=col_count)
+    cell = ws.cell(row=1, column=1, value=DISCLAIMER_FOOTER)
+    cell.font = Font(bold=True, color="7A4F1A", size=9)
+    cell.fill = PatternFill("solid", fgColor="FEF6EA")
+    cell.alignment = Alignment(wrap_text=True)
+    ws.row_dimensions[1].height = 22
+
+
+def _gen_customer_rows(n):
+    headers = ["customer_id","first_name","last_name","email","phone",
+               "company","address","city","state","zip","account_type","created_date"]
+    rows = []
+    for i in range(n):
+        fn = random.choice(FIRST_NAMES)
+        ln = random.choice(LAST_NAMES)
+        co = rand_company()
+        city, state, zip_ = random.choice(CITIES)
+        rows.append([
+            f"CUST-{10000+i}", fn, ln, rand_email(f"{fn} {ln}", co),
+            rand_phone(), co, f"{random.randint(100,9999)} {random.choice(STREETS)}",
+            city, state, zip_,
+            random.choice(["Standard","Premium","Enterprise","Trial"]),
+            rand_date(-730, 0),
+        ])
+    return headers, rows
+
+def _gen_vendor_rows(n):
+    headers = ["vendor_id","vendor_name","contact_name","email","phone",
+               "address","city","state","zip","category","status","contract_exp"]
+    rows = []
+    for i in range(n):
+        co = rand_company()
+        cn = rand_name()
+        city, state, zip_ = random.choice(CITIES)
+        rows.append([
+            f"VEN-{2000+i}", co, cn, rand_email(cn, co), rand_phone(),
+            f"{random.randint(100,9999)} {random.choice(STREETS)}",
+            city, state, zip_,
+            random.choice(["Software","Hardware","Consulting","Staffing","Facilities","Legal"]),
+            random.choice(["Active","Inactive","Pending","Under Review"]),
+            rand_date(0, 730),
+        ])
+    return headers, rows
+
+def _gen_transaction_rows(n):
+    headers = ["transaction_id","date","amount","currency","type","status",
+               "account_id","description","reference","processed_by"]
+    rows = []
+    for i in range(n):
+        rows.append([
+            f"TXN-{100000+i}",
+            rand_date(-365, 0),
+            round(random.uniform(10, 50000), 2),
+            "USD",
+            random.choice(["Payment","Refund","Adjustment","Credit","Debit","Transfer"]),
+            random.choice(["Completed","Pending","Failed","Reversed","On Hold"]),
+            f"ACC-{random.randint(1000,9999)}",
+            random.choice(["Monthly fee","Service charge","Reimbursement",
+                           "License renewal","One-time purchase","Wire transfer"]),
+            rand_id("REF", 6),
+            rand_name(),
+        ])
+    return headers, rows
+
+def _gen_employee_rows(n):
+    headers = ["employee_id","first_name","last_name","email","department",
+               "title","hire_date","salary","status","manager","location"]
+    rows = []
+    depts = ["Engineering","Finance","HR","Operations","Sales","Marketing","Legal","IT","Product"]
+    titles = ["Analyst","Senior Analyst","Manager","Director","Coordinator","Specialist","Lead","Associate"]
+    for i in range(n):
+        fn = random.choice(FIRST_NAMES)
+        ln = random.choice(LAST_NAMES)
+        co = rand_company()
+        dept = random.choice(depts)
+        rows.append([
+            f"EMP-{5000+i}", fn, ln, rand_email(f"{fn} {ln}", co),
+            dept, f"{random.choice(titles)}",
+            rand_date(-1825, -30),
+            random.randint(42000, 185000),
+            random.choice(["Active","On Leave","Terminated","Contractor"]),
+            rand_name(),
+            random.choice(["Remote","New York, NY","Chicago, IL","Austin, TX","Atlanta, GA"]),
+        ])
+    return headers, rows
+
+def _gen_inventory_rows(n):
+    headers = ["sku","product_name","category","quantity_on_hand","reorder_point",
+               "unit_cost","unit_price","supplier","warehouse","last_updated"]
+    cats = ["Electronics","Office","Furniture","Software","Supplies","Hardware","Peripherals"]
+    products = ["Laptop","Monitor","Keyboard","Mouse","Desk","Chair","Headset",
+                "Webcam","Router","Switch","Cable","License","Printer","Scanner"]
+    rows = []
+    for i in range(n):
+        cost = round(random.uniform(5, 2000), 2)
+        rows.append([
+            f"SKU-{random.randint(10000,99999)}",
+            f"{random.choice(products)} {random.choice(['Pro','Plus','Lite','Standard','HD','v2'])}",
+            random.choice(cats),
+            random.randint(0, 500),
+            random.randint(5, 50),
+            cost,
+            round(cost * random.uniform(1.2, 2.5), 2),
+            rand_company(),
+            random.choice(["WH-East","WH-West","WH-Central","WH-Remote"]),
+            rand_date(-30, 0),
+        ])
+    return headers, rows
+
+def _gen_messy_rows(n):
+    headers = ["id","Name","name ","EMAIL","Phone Number","phone_number",
+               "Company","COMPANY","Amount","amount ","Date","DATE","Status","status"]
+    rows = []
+    for i in range(n):
+        name = rand_name()
+        co   = rand_company()
+        amt  = round(random.uniform(10, 9999), 2)
+        dt   = rand_date(-365, 0)
+        status = random.choice(["Active","active","ACTIVE","","N/A",None,"Yes","TRUE","1"])
+        rows.append([
+            random.choice([f"ID-{i}", str(i), f"{i:05d}", None, i]),
+            name if random.random() > 0.1 else name.upper(),
+            name.lower() if random.random() > 0.2 else None,
+            rand_email(name, co) if random.random() > 0.15 else name.split()[0]+"@",
+            rand_phone() if random.random() > 0.1 else str(random.randint(1000000000,9999999999)),
+            rand_phone() if random.random() > 0.2 else None,
+            co, co.upper() if random.random() > 0.3 else co + " ",
+            f"${amt:,.2f}", str(amt),
+            dt, dt.replace(",", "").replace(" ", "/"),
+            status, status,
+        ])
+    return headers, rows
+
+
+DATA_GENERATORS = {
+    "customers":    _gen_customer_rows,
+    "vendors":      _gen_vendor_rows,
+    "transactions": _gen_transaction_rows,
+    "employees":    _gen_employee_rows,
+    "inventory":    _gen_inventory_rows,
+    "messy":        _gen_messy_rows,
+}
+
+
+def _write_data(out_dir: str, data_key: str, fmt: str, n: int, config: dict) -> list[str]:
+    gen_fn = DATA_GENERATORS.get(data_key)
+    if not gen_fn:
+        return []
+    headers, rows = gen_fn(n)
+    created = []
+
+    base = f"{data_key}_{rand_id('', 4).lstrip('-')}"
+    disclaimer_row = [DISCLAIMER_FOOTER] + [""] * (len(headers) - 1)
+
+    if fmt in ("csv", "both_data"):
+        path = os.path.join(out_dir, base + ".csv")
+        with open(path, "w", newline="", encoding="utf-8") as f:
+            w = csv.writer(f)
+            w.writerow(disclaimer_row)
+            w.writerow(headers)
+            w.writerows(rows)
+        created.append(path)
+
+    if fmt in ("xlsx", "both_data"):
+        path = os.path.join(out_dir, base + ".xlsx")
+        wb = openpyxl.Workbook()
+        ws = wb.active
+        ws.title = data_key.replace("_", " ").title()
+        _apply_header(ws, headers)
+        alt_fill = PatternFill("solid", fgColor="F0F4FB")
+        for r_idx, row in enumerate(rows, 2):
+            for c_idx, val in enumerate(row, 1):
+                cell = ws.cell(row=r_idx, column=c_idx, value=val)
+                if r_idx % 2 == 0:
+                    cell.fill = alt_fill
+        for col in ws.columns:
+            max_len = max((len(str(c.value or "")) for c in col), default=8)
+            ws.column_dimensions[col[0].column_letter].width = min(max_len + 4, 40)
+        _disclaimer_row(ws, len(headers))
+        wb.save(path)
+        created.append(path)
+
+    if fmt in ("json", "both_data"):
+        path = os.path.join(out_dir, base + ".json")
+        data_out = {
+            "_disclaimer": DISCLAIMER_FOOTER,
+            "generated": datetime.today().isoformat(),
+            "records": [dict(zip(headers, row)) for row in rows],
+        }
+        Path(path).write_text(json.dumps(data_out, indent=2, default=str), encoding="utf-8")
+        created.append(path)
+
+    if fmt in ("txt", "both_data"):
+        path = os.path.join(out_dir, base + ".txt")
+        lines = [DISCLAIMER_FOOTER, ""]
+        col_widths = [max(len(str(h)), max((len(str(r[i] or "")) for r in rows), default=0))
+                      for i, h in enumerate(headers)]
+        sep = "+" + "+".join("-" * (w + 2) for w in col_widths) + "+"
+        def fmt_row(vals):
+            return "|" + "|".join(f" {str(v or ''):<{col_widths[i]}} " for i, v in enumerate(vals)) + "|"
+        lines += [sep, fmt_row(headers), sep]
+        for row in rows:
+            lines.append(fmt_row(row))
+        lines.append(sep)
+        Path(path).write_text("\n".join(lines), encoding="utf-8")
+        created.append(path)
+
+    return created
+
+
+# ---------------------------------------------------------------------------
 # PYWEBVIEW API
 # ---------------------------------------------------------------------------
 
 class API:
     def generate(self, payload: dict):
-        """
-        payload keys:
-          buyerName, vendorName, docTypes (list of keys from DOC_GENERATORS),
-          contractType, outputFolder, quantity
-        """
         output_folder = Path(payload.get("outputFolder") or Path.home() / "Documents" / "sample_docs")
         output_folder.mkdir(parents=True, exist_ok=True)
 
-        doc_types = payload.get("docTypes", [])
-        quantity  = int(payload.get("quantity", 1))
-        results   = []
+        doc_types  = payload.get("docTypes", [])
+        quantity   = int(payload.get("quantity", 1))
+        fmt        = payload.get("format", "pdf").lower()
+        mode       = payload.get("mode", "documents")
+        results    = []
 
-        for doc_key in doc_types:
-            gen_fn = DOC_GENERATORS.get(doc_key)
-            if not gen_fn:
-                continue
+        # Separate doc vs data keys
+        doc_keys  = [k for k in doc_types if k in DOC_GENERATORS]
+        data_keys = [k for k in doc_types if k in DATA_GENERATORS]
+
+        # Document export
+        doc_fmt = fmt if fmt in ("html", "pdf", "docx", "txt") else "pdf"
+        for doc_key in doc_keys:
+            gen_fn = DOC_GENERATORS[doc_key]
             for _ in range(quantity):
                 result = gen_fn(payload)
-                out_path = output_folder / result["filename"]
-                out_path.write_text(result["html"], encoding="utf-8")
-                results.append(str(out_path))
+                filename = result["base"] + _ext(doc_fmt)
+                out_path = str(output_folder / filename)
+                _write_doc(out_path, doc_fmt, result["title"], result["html"])
+                results.append(out_path)
+
+        # Data export
+        data_fmt = fmt if fmt in ("csv", "xlsx", "json", "txt") else "xlsx"
+        for data_key in data_keys:
+            for _ in range(quantity):
+                paths = _write_data(str(output_folder), data_key, data_fmt, 50, payload)
+                results.extend(paths)
+
+        # Always also write an Excel summary if docs were generated
+        if doc_keys and doc_fmt != "xlsx":
+            summary_path = str(output_folder / f"summary_{rand_id('',4).lstrip('-')}.xlsx")
+            wb = openpyxl.Workbook()
+            ws = wb.active
+            ws.title = "Generated Files"
+            headers = ["#", "File", "Type", "Format", "Generated At"]
+            _apply_header(ws, headers)
+            for i, fp in enumerate(results, 1):
+                fname = os.path.basename(fp)
+                ftype = fname.split("_")[0].upper()
+                ws.cell(row=i+1, column=1, value=i)
+                ws.cell(row=i+1, column=2, value=fname)
+                ws.cell(row=i+1, column=3, value=ftype)
+                ws.cell(row=i+1, column=4, value=doc_fmt.upper())
+                ws.cell(row=i+1, column=5, value=datetime.today().strftime("%Y-%m-%d %H:%M"))
+            for col in ws.columns:
+                ws.column_dimensions[col[0].column_letter].width = max(
+                    len(str(col[0].value or "")),
+                    max((len(str(c.value or "")) for c in col[1:]), default=0)
+                ) + 4
+            _disclaimer_row(ws, len(headers))
+            wb.save(summary_path)
+            results.append(summary_path)
 
         return {"success": True, "files": results, "folder": str(output_folder)}
 
