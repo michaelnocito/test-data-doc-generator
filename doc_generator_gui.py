@@ -2,6 +2,7 @@ import os
 import json
 import random
 import secrets
+import threading
 from dataclasses import dataclass, asdict
 from datetime import date, timedelta
 
@@ -12,6 +13,8 @@ from reportlab.lib.pagesizes import LETTER
 from reportlab.pdfgen import canvas
 from docx import Document
 from docx.shared import Pt
+import openpyxl
+from openpyxl.styles import Font, PatternFill, Alignment
 
 # =========================
 # LEGAL / SAFETY CONSTANTS
@@ -62,7 +65,7 @@ class SessionData:
 
 CONTRACT_TYPES = ["MSA", "PSA", "BAA", "DUA", "SLA"]
 VERTICALS = ["Healthcare", "Higher Education", "Government", "Commercial"]
-EXPORT_FORMATS = ["PDF", "Word"]
+EXPORT_FORMATS = ["PDF", "Word", "Excel"]
 
 RNG = random.Random(secrets.randbits(64))
 
@@ -279,6 +282,79 @@ def export_docx(path: str, title: str, body: str) -> None:
     doc.save(path)
 
 
+def export_xlsx(path: str, sd: SessionData, doc_types: list[str], exhibits: list[str]) -> None:
+    wb = openpyxl.Workbook()
+
+    # --- Summary sheet ---
+    ws = wb.active
+    ws.title = "Contract Summary"
+
+    header_fill = PatternFill("solid", fgColor="2AB3A3")
+    header_font = Font(bold=True, color="FFFFFF", size=11)
+    warn_fill = PatternFill("solid", fgColor="FFF4D6")
+    warn_font = Font(bold=True, color="8A5A00", size=10)
+
+    # Disclaimer row
+    ws.merge_cells("A1:D1")
+    ws["A1"] = FOOTER_NOTICE
+    ws["A1"].fill = warn_fill
+    ws["A1"].font = warn_font
+    ws["A1"].alignment = Alignment(wrap_text=True)
+    ws.row_dimensions[1].height = 28
+
+    # Column headers
+    headers = ["Field", "Value", "Field", "Value"]
+    for col, h in enumerate(headers, 1):
+        cell = ws.cell(row=2, column=col, value=h)
+        cell.fill = header_fill
+        cell.font = header_font
+
+    # Contract data rows
+    rows = [
+        ("Session ID", sd.session_id, "Contract Number", sd.contract_number),
+        ("Generated On", sd.created_on, "Effective Date", sd.effective_date),
+        ("Contract Type", sd.contract_type, "Vertical", sd.vertical),
+        ("Term (months)", sd.term_months, "Annual Fee", f"${sd.annual_fee:,}"),
+        ("Governing Law", sd.governing_law, "Documents", ", ".join(doc_types)),
+        ("Exhibits", ", ".join(exhibits) if exhibits else "None", "", ""),
+    ]
+    for r_idx, row_data in enumerate(rows, 3):
+        for c_idx, val in enumerate(row_data, 1):
+            ws.cell(row=r_idx, column=c_idx, value=val)
+
+    ws.column_dimensions["A"].width = 22
+    ws.column_dimensions["B"].width = 36
+    ws.column_dimensions["C"].width = 22
+    ws.column_dimensions["D"].width = 36
+
+    # --- Parties sheet ---
+    wp = wb.create_sheet("Parties")
+    wp.merge_cells("A1:D1")
+    wp["A1"] = FOOTER_NOTICE
+    wp["A1"].fill = warn_fill
+    wp["A1"].font = warn_font
+    wp["A1"].alignment = Alignment(wrap_text=True)
+    wp.row_dimensions[1].height = 28
+
+    party_headers = ["Role", "Company Name", "Address", "City/State/ZIP", "Phone"]
+    for col, h in enumerate(party_headers, 1):
+        cell = wp.cell(row=2, column=col, value=h)
+        cell.fill = header_fill
+        cell.font = header_font
+
+    for r_idx, (role, party) in enumerate([("Buyer", sd.buyer), ("Vendor", sd.vendor)], 3):
+        wp.cell(row=r_idx, column=1, value=role)
+        wp.cell(row=r_idx, column=2, value=party.name)
+        wp.cell(row=r_idx, column=3, value=party.address1)
+        wp.cell(row=r_idx, column=4, value=party.address2)
+        wp.cell(row=r_idx, column=5, value=party.phone)
+
+    for col_letter, width in zip("ABCDE", [12, 36, 30, 28, 18]):
+        wp.column_dimensions[col_letter].width = width
+
+    wb.save(path)
+
+
 # =========================
 # GENERATION ENGINE
 # =========================
@@ -313,24 +389,36 @@ def generate_docs(
     )
 
     created: list[str] = []
-
-    def write(base_name: str, title: str, body: str) -> None:
-        base_name = sanitize_filename(base_name)
-        ext = ".pdf" if fmt == "PDF" else ".docx"
-        path = os.path.join(out_dir, base_name + ext)
-        exporter = export_pdf if fmt == "PDF" else export_docx
-        exporter(path, title, body)
-        created.append(path)
-
     buyer_slug = sanitize_filename(buyer.name or "Buyer")
     vendor_slug = sanitize_filename(vendor.name or "Vendor")
 
-    if make_contract:
-        write(f"{vendor_slug}_to_{buyer_slug}_Contract", "Test Document - Contract", build_contract(sd, exhibits))
-    if make_coi:
-        write(f"{vendor_slug}_COI", "Test Document - COI", build_coi(sd))
-    if make_amend:
-        write(f"{vendor_slug}_to_{buyer_slug}_Amendment", "Test Document - Amendment", build_amendment(sd))
+    if fmt == "Excel":
+        # Excel: one workbook with summary + parties; no per-doc splitting
+        doc_types = []
+        if make_contract:
+            doc_types.append("Contract")
+        if make_coi:
+            doc_types.append("COI")
+        if make_amend:
+            doc_types.append("Amendment")
+        xlsx_path = os.path.join(out_dir, f"{vendor_slug}_to_{buyer_slug}_TestData.xlsx")
+        export_xlsx(xlsx_path, sd, doc_types, exhibits)
+        created.append(xlsx_path)
+    else:
+        def write(base_name: str, title: str, body: str) -> None:
+            base_name = sanitize_filename(base_name)
+            ext = ".pdf" if fmt == "PDF" else ".docx"
+            path = os.path.join(out_dir, base_name + ext)
+            exporter = export_pdf if fmt == "PDF" else export_docx
+            exporter(path, title, body)
+            created.append(path)
+
+        if make_contract:
+            write(f"{vendor_slug}_to_{buyer_slug}_Contract", "Test Document - Contract", build_contract(sd, exhibits))
+        if make_coi:
+            write(f"{vendor_slug}_COI", "Test Document - COI", build_coi(sd))
+        if make_amend:
+            write(f"{vendor_slug}_to_{buyer_slug}_Amendment", "Test Document - Amendment", build_amendment(sd))
 
     metadata = {
         "document_type": "test",
@@ -371,6 +459,7 @@ class App(ctk.CTk):
         self.minsize(1000, 700)
 
         self.out_dir = os.path.join(os.getcwd(), "sample_docs")
+        self._generating = False
 
         self.grid_columnconfigure(0, weight=1)
         self.grid_columnconfigure(1, weight=1)
@@ -467,7 +556,7 @@ class App(ctk.CTk):
         self.output_frame.grid_columnconfigure(0, weight=1)
         self.output_frame.grid_columnconfigure(1, weight=0)
 
-        self.out_label = ctk.CTkLabel(self.output_frame, text=f"Output folder:\n{self.out_dir}", justify="left")
+        self.out_label = ctk.CTkLabel(self.output_frame, text=f"Output folder:  {self.out_dir}", justify="left")
         self.out_label.grid(row=0, column=0, padx=10, pady=10, sticky="w")
 
         ctk.CTkButton(
@@ -492,7 +581,7 @@ class App(ctk.CTk):
         )
         self.disclaimer_label.grid(row=4, column=0, columnspan=2, padx=20, pady=(0, 12), sticky="ew")
 
-        ctk.CTkButton(
+        self.generate_btn = ctk.CTkButton(
             self,
             text="Generate Test Documents",
             command=self.on_generate,
@@ -500,7 +589,8 @@ class App(ctk.CTk):
             hover_color=self.ACCENT_HOVER,
             corner_radius=10,
             height=44,
-        ).grid(row=5, column=0, columnspan=2, padx=20, pady=(0, 20), sticky="ew")
+        )
+        self.generate_btn.grid(row=5, column=0, columnspan=2, padx=20, pady=(0, 20), sticky="ew")
 
         self.status = ctk.CTkLabel(self, text="Ready.", text_color="#666666")
         self.status.grid(row=6, column=0, columnspan=2, padx=20, pady=(0, 10), sticky="w")
@@ -529,9 +619,12 @@ class App(ctk.CTk):
         folder = filedialog.askdirectory()
         if folder:
             self.out_dir = folder
-            self.out_label.configure(text=f"Output folder:\n{self.out_dir}")
+            self.out_label.configure(text=f"Output folder:  {self.out_dir}")
 
     def on_generate(self) -> None:
+        if self._generating:
+            return
+
         if not (self.doc_contract.get() or self.doc_coi.get() or self.doc_amend.get()):
             messagebox.showwarning("No documents selected", "Please select at least one document type.")
             return
@@ -563,25 +656,41 @@ class App(ctk.CTk):
 
         exhibits = [k for k, v in [("A", self.exhibit_a), ("B", self.exhibit_b), ("C", self.exhibit_c)] if v.get()]
 
-        try:
-            created = generate_docs(
-                self.out_dir,
-                buyer,
-                vendor,
-                self.contract_type_var.get(),
-                self.vertical_var.get(),
-                self.export_var.get(),
-                self.doc_contract.get(),
-                self.doc_coi.get(),
-                self.doc_amend.get(),
-                exhibits,
-            )
-        except Exception as e:
-            messagebox.showerror("Error", str(e))
-            return
+        self._generating = True
+        self.generate_btn.configure(state="disabled", text="Generating…")
+        self.status.configure(text="Generating documents, please wait…")
 
+        def run():
+            try:
+                created = generate_docs(
+                    self.out_dir,
+                    buyer,
+                    vendor,
+                    self.contract_type_var.get(),
+                    self.vertical_var.get(),
+                    self.export_var.get(),
+                    self.doc_contract.get(),
+                    self.doc_coi.get(),
+                    self.doc_amend.get(),
+                    exhibits,
+                )
+                self.after(0, lambda: self._on_done(created))
+            except Exception as e:
+                self.after(0, lambda err=e: self._on_error(err))
+
+        threading.Thread(target=run, daemon=True).start()
+
+    def _on_done(self, created: list[str]) -> None:
+        self._generating = False
+        self.generate_btn.configure(state="normal", text="Generate Test Documents")
+        self.status.configure(text=f"Done — {len(created)} file(s) saved to: {self.out_dir}")
         messagebox.showinfo("Done", "Created files:\n\n" + "\n".join(created))
-        self.status.configure(text=f"Generated {len(created)} file(s). Saved to: {self.out_dir}")
+
+    def _on_error(self, err: Exception) -> None:
+        self._generating = False
+        self.generate_btn.configure(state="normal", text="Generate Test Documents")
+        self.status.configure(text=f"Error: {err}")
+        messagebox.showerror("Generation Failed", str(err))
 
 
 if __name__ == "__main__":
