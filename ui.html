@@ -8,501 +8,325 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300..700&family=DM+Serif+Display&display=swap" rel="stylesheet">
 <style>
-:root {
-  --color-bg:             #f7f4ef;
-  --color-surface:        #fdfcf9;
-  --color-surface-2:      #ffffff;
-  --color-surface-offset: #f0ece4;
-  --color-border:         #e0d9ce;
-  --color-divider:        #ece7de;
-  --color-text:           #2b2620;
-  --color-text-muted:     #7a7168;
-  --color-text-faint:     #b8b0a5;
-  --color-primary:        #c27a3a;
-  --color-primary-hover:  #a86228;
-  --color-primary-light:  #fdf3e7;
-  --color-primary-border: #f0d4b0;
-  --color-success:        #4a7c4e;
-  --color-success-light:  #edf5ee;
-  --color-warning-text:   #7a4f1a;
-  --color-warning-bg:     #fef6ea;
-  --color-warning-border: #f0d4a0;
-  --font-display: 'DM Serif Display', Georgia, serif;
-  --font-body:    'DM Sans', system-ui, sans-serif;
-  --text-xs:   clamp(0.75rem,  0.7rem  + 0.25vw, 0.875rem);
-  --text-sm:   clamp(0.875rem, 0.8rem  + 0.35vw, 1rem);
-  --text-base: clamp(1rem,     0.95rem + 0.25vw, 1.125rem);
-  --text-lg:   clamp(1.125rem, 1rem    + 0.75vw, 1.5rem);
-  --text-xl:   clamp(1.5rem,   1.2rem  + 1.25vw, 2.25rem);
-  --space-1:.25rem;--space-2:.5rem;--space-3:.75rem;--space-4:1rem;
-  --space-5:1.25rem;--space-6:1.5rem;--space-8:2rem;--space-10:2.5rem;--space-12:3rem;
-  --radius-sm:.375rem;--radius-md:.5rem;--radius-lg:.75rem;--radius-xl:1rem;--radius-full:9999px;
-  --shadow-sm:0 1px 3px oklch(0.2 0.02 60 / 0.08);
-  --shadow-md:0 4px 16px oklch(0.2 0.02 60 / 0.10);
-  --shadow-lg:0 8px 32px oklch(0.2 0.02 60 / 0.14);
-  --transition:180ms cubic-bezier(0.16,1,0.3,1);
-}
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-html{-webkit-font-smoothing:antialiased;scroll-behavior:smooth}
-body{min-height:100dvh;font-family:var(--font-body);font-size:var(--text-base);color:var(--color-text);background:var(--color-bg);line-height:1.6}
-input,button,select,textarea{font:inherit;color:inherit}
-button{cursor:pointer;border:none;background:none}
-img{display:block;max-width:100%}
-.app-shell{min-height:100dvh;display:grid;grid-template-rows:auto 1fr auto}
-.topbar{background:var(--color-surface-2);border-bottom:1px solid var(--color-border);padding:var(--space-4) var(--space-8);display:flex;align-items:center;gap:var(--space-3);box-shadow:var(--shadow-sm)}
-.topbar-logo{display:flex;align-items:center;gap:var(--space-2)}
-.topbar-logo svg{color:var(--color-primary)}
-.topbar-title{font-family:var(--font-display);font-size:var(--text-lg);color:var(--color-text);letter-spacing:-0.01em}
-.topbar-badge{font-size:var(--text-xs);margin-left:auto;background:var(--color-warning-bg);border:1px solid var(--color-warning-border);border-radius:var(--radius-full);padding:var(--space-1) var(--space-3);font-weight:500;color:var(--color-warning-text)}
-.main-content{max-width:700px;margin-inline:auto;padding:var(--space-10) var(--space-6);width:100%}
-.step-indicator{display:flex;align-items:center;margin-bottom:var(--space-10)}
-.step-item{display:flex;flex-direction:column;align-items:center;gap:var(--space-2);flex:1;position:relative}
-.step-item:not(:last-child)::after{content:'';position:absolute;top:18px;left:calc(50% + 18px);width:calc(100% - 36px);height:2px;background:#d6cfc4;transition:background var(--transition)}
-.step-item.done:not(:last-child)::after{background:var(--color-success)}
-.step-circle{width:36px;height:36px;border-radius:var(--radius-full);display:flex;align-items:center;justify-content:center;font-size:var(--text-sm);font-weight:600;border:2px solid #d6cfc4;background:var(--color-bg);color:var(--color-text-faint);transition:all var(--transition);z-index:1}
-.step-item.active .step-circle{border-color:var(--color-primary);background:var(--color-primary);color:white;box-shadow:0 0 0 4px oklch(from var(--color-primary) l c h / 0.15)}
-.step-item.done .step-circle{border-color:var(--color-success);background:var(--color-success);color:white}
-.step-label{font-size:var(--text-xs);color:var(--color-text-faint);font-weight:500;text-align:center;white-space:nowrap;transition:color var(--transition)}
-.step-item.active .step-label{color:var(--color-primary)}
-.step-item.done .step-label{color:var(--color-success)}
-.wizard-card{background:var(--color-surface-2);border:1px solid var(--color-border);border-radius:var(--radius-xl);box-shadow:var(--shadow-md);overflow:hidden}
-.wizard-header{padding:var(--space-8) var(--space-8) var(--space-6);border-bottom:1px solid var(--color-divider);background:var(--color-surface)}
-.wizard-step-label{font-size:var(--text-xs);font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:var(--color-primary);margin-bottom:var(--space-2)}
-.wizard-heading{font-family:var(--font-display);font-size:var(--text-xl);color:var(--color-text);line-height:1.2;margin-bottom:var(--space-2)}
-.wizard-desc{font-size:var(--text-sm);color:var(--color-text-muted);max-width:52ch}
-.wizard-body{padding:var(--space-8)}
-.wizard-footer{padding:var(--space-6) var(--space-8);border-top:1px solid var(--color-divider);display:flex;justify-content:space-between;align-items:center;background:var(--color-surface)}
-/* Mode selector cards */
-.mode-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:var(--space-4);margin-bottom:var(--space-6)}
-.mode-card{display:flex;flex-direction:column;align-items:center;gap:var(--space-3);padding:var(--space-6) var(--space-4);background:var(--color-surface);border:2px solid var(--color-border);border-radius:var(--radius-lg);cursor:pointer;transition:all var(--transition);text-align:center;user-select:none}
-.mode-card:hover{border-color:var(--color-primary-border);background:var(--color-primary-light)}
-.mode-card.selected{border-color:var(--color-primary);background:var(--color-primary-light);box-shadow:0 0 0 3px oklch(from var(--color-primary) l c h / 0.12)}
-.mode-icon{font-size:1.75rem;line-height:1}
-.mode-label{font-size:var(--text-sm);font-weight:600;color:var(--color-text)}
-.mode-sub{font-size:var(--text-xs);color:var(--color-text-muted)}
-/* Category/type grid */
-.type-grid{display:grid;grid-template-columns:1fr 1fr;gap:var(--space-3)}
-.type-card{display:flex;align-items:flex-start;gap:var(--space-3);padding:var(--space-4);background:var(--color-surface);border:1.5px solid var(--color-border);border-radius:var(--radius-lg);cursor:pointer;transition:all var(--transition);user-select:none}
-.type-card:hover{border-color:var(--color-primary-border);background:var(--color-primary-light)}
-.type-card.selected{border-color:var(--color-primary);background:var(--color-primary-light)}
-.type-card input[type=checkbox]{width:16px;height:16px;margin-top:2px;accent-color:var(--color-primary);flex-shrink:0}
-.type-card-label{font-size:var(--text-sm);font-weight:600;color:var(--color-text)}
-.type-card-sub{font-size:var(--text-xs);color:var(--color-text-muted);margin-top:2px}
-/* Party fields */
-.party-card{background:var(--color-surface);border:1px solid var(--color-border);border-radius:var(--radius-lg);padding:var(--space-6);margin-bottom:var(--space-5)}
-.party-title{font-size:var(--text-sm);font-weight:600;margin-bottom:var(--space-4);display:flex;align-items:center;gap:var(--space-2)}
-.party-badge{font-size:var(--text-xs);background:var(--color-primary-light);color:var(--color-primary);border:1px solid var(--color-primary-border);border-radius:var(--radius-full);padding:2px var(--space-2);font-weight:600}
-.field{display:flex;flex-direction:column;gap:var(--space-2);margin-bottom:var(--space-4)}
-.field:last-child{margin-bottom:0}
-.field-row{display:grid;grid-template-columns:1fr 1fr;gap:var(--space-4)}
-label{font-size:var(--text-sm);font-weight:500;color:var(--color-text)}
-.label-hint{font-weight:400;color:var(--color-text-muted);font-size:var(--text-xs);margin-left:var(--space-2)}
-input[type=text],select{width:100%;padding:var(--space-3) var(--space-4);background:var(--color-surface);border:1.5px solid var(--color-border);border-radius:var(--radius-md);font-size:var(--text-sm);color:var(--color-text);transition:border-color var(--transition),box-shadow var(--transition);appearance:none;-webkit-appearance:none}
-input[type=text]::placeholder{color:var(--color-text-faint)}
-input[type=text]:focus,select:focus{outline:none;border-color:var(--color-primary);box-shadow:0 0 0 3px oklch(from var(--color-primary) l c h / 0.15);background:var(--color-surface-2)}
-.select-wrap{position:relative}
-.select-wrap::after{content:'';position:absolute;right:var(--space-4);top:50%;transform:translateY(-50%);width:10px;height:6px;background:var(--color-text-muted);clip-path:polygon(0 0,100% 0,50% 100%);pointer-events:none}
-.select-wrap select{padding-right:var(--space-10)}
-/* Quantity */
-.qty-row{display:flex;align-items:center;gap:var(--space-3)}
-.qty-btn{width:36px;height:36px;border-radius:var(--radius-full);border:1.5px solid var(--color-border);background:var(--color-surface);font-size:1.2rem;line-height:1;display:flex;align-items:center;justify-content:center;transition:all var(--transition)}
-.qty-btn:hover{border-color:var(--color-primary);color:var(--color-primary);background:var(--color-primary-light)}
-.qty-val{font-size:var(--text-base);font-weight:600;min-width:2ch;text-align:center}
-/* Folder */
-.folder-row{display:flex;align-items:center;gap:var(--space-3);background:var(--color-surface);border:1.5px solid var(--color-border);border-radius:var(--radius-md);padding:var(--space-3) var(--space-4)}
-.folder-path{flex:1;font-size:var(--text-sm);color:var(--color-text-muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.btn-sm{display:inline-flex;align-items:center;gap:var(--space-2);padding:var(--space-2) var(--space-4);border-radius:var(--radius-sm);font-size:var(--text-xs);font-weight:600;background:var(--color-surface-offset);color:var(--color-text);border:1px solid var(--color-border);transition:all var(--transition);flex-shrink:0}
-.btn-sm:hover{background:var(--color-primary-light);border-color:var(--color-primary-border);color:var(--color-primary)}
-/* Buttons */
-.btn{display:inline-flex;align-items:center;gap:var(--space-2);padding:var(--space-3) var(--space-6);border-radius:var(--radius-md);font-size:var(--text-sm);font-weight:600;transition:all var(--transition);border:1.5px solid transparent;min-height:44px;white-space:nowrap}
-.btn-primary{background:var(--color-primary);color:white;border-color:var(--color-primary)}
-.btn-primary:hover{background:var(--color-primary-hover);border-color:var(--color-primary-hover);box-shadow:var(--shadow-sm)}
-.btn-primary:disabled{opacity:.4;cursor:not-allowed}
-.btn-ghost{background:transparent;color:var(--color-text-muted);border-color:var(--color-border)}
-.btn-ghost:hover{background:var(--color-surface-offset);color:var(--color-text);border-color:var(--color-text-faint)}
-.btn-success{background:var(--color-success);color:white;border-color:var(--color-success);font-size:var(--text-base);padding:var(--space-4) var(--space-8);border-radius:var(--radius-lg)}
-.btn-success:hover{filter:brightness(1.08);box-shadow:var(--shadow-md)}
-.btn-success:disabled{opacity:.4;cursor:not-allowed}
-/* Disclaimer */
-.disclaimer{background:var(--color-warning-bg);border:1px solid var(--color-warning-border);border-radius:var(--radius-lg);padding:var(--space-4) var(--space-5);display:flex;gap:var(--space-3);align-items:flex-start;margin-bottom:var(--space-8)}
-.disclaimer-text{font-size:var(--text-xs);color:var(--color-warning-text);line-height:1.5}
-/* Review */
-.review-block{background:var(--color-surface);border:1px solid var(--color-border);border-radius:var(--radius-lg);overflow:hidden;margin-bottom:var(--space-4)}
-.review-block-header{padding:var(--space-3) var(--space-5);background:var(--color-surface-offset);border-bottom:1px solid var(--color-divider);font-size:var(--text-xs);font-weight:600;color:var(--color-text-muted);text-transform:uppercase;letter-spacing:.06em}
-.review-grid{display:grid;grid-template-columns:1fr 1fr}
-.review-item{padding:var(--space-3) var(--space-5);border-bottom:1px solid var(--color-divider);border-right:1px solid var(--color-divider)}
-.review-item:nth-child(even){border-right:none}
-.review-item:nth-last-child(-n+2){border-bottom:none}
-.review-item-label{font-size:var(--text-xs);color:var(--color-text-faint);margin-bottom:2px}
-.review-item-value{font-size:var(--text-sm);font-weight:500;color:var(--color-text)}
-/* Output log */
-.output-log{display:none;flex-direction:column;gap:var(--space-3);padding:var(--space-6) var(--space-8);border-top:1px solid var(--color-divider)}
-.output-log.visible{display:flex}
-.output-file{display:flex;align-items:center;gap:var(--space-3);padding:var(--space-3) var(--space-4);background:var(--color-success-light);border:1px solid #b8d8ba;border-radius:var(--radius-md);font-size:var(--text-sm);color:var(--color-success);font-weight:500}
-.output-open-btn{margin-left:auto;font-size:var(--text-xs);font-weight:600;color:var(--color-success);text-decoration:underline;background:none;border:none;cursor:pointer;padding:0}
-/* Divider label */
-.section-divider{display:flex;align-items:center;gap:var(--space-3);margin:var(--space-6) 0 var(--space-4)}
-.section-divider-line{flex:1;height:1px;background:var(--color-divider)}
-.section-divider-label{font-size:var(--text-xs);font-weight:600;color:var(--color-text-muted);text-transform:uppercase;letter-spacing:.06em;white-space:nowrap}
-/* Footer */
-.app-footer{text-align:center;padding:var(--space-6);font-size:var(--text-xs);color:var(--color-text-faint);border-top:1px solid var(--color-divider)}
-/* Step panels */
+body{margin:0;font-family:'DM Sans',system-ui,sans-serif;background:#f7f4ef;color:#2b2620}
+.app-shell{min-height:100vh;display:grid;grid-template-rows:auto 1fr auto}
+.topbar{background:#fff;border-bottom:1px solid #e0d9ce;padding:12px 24px;font-family:'DM Serif Display',serif;font-size:18px;display:flex;justify-content:space-between;align-items:center}
+.main-content{max-width:700px;margin:32px auto;padding:0 16px}
+.wizard-card{background:#fff;border:1px solid #e0d9ce;border-radius:16px;overflow:hidden}
+.wizard-header{padding:24px;border-bottom:1px solid #ece7de;background:#fdfcf9}
+.wizard-body{padding:24px}
+.wizard-footer{padding:16px 24px;border-top:1px solid #ece7de;display:flex;justify-content:space-between;align-items:center;background:#fdfcf9}
+.step-indicator{display:flex;gap:8px;margin-bottom:24px}
+.step-item{flex:1;text-align:center;font-size:11px;color:#9a9187}
+.step-circle{width:28px;height:28px;border-radius:999px;border:2px solid #d6cfc4;display:inline-flex;align-items:center;justify-content:center;font-size:12px;margin-bottom:4px;background:#f7f4ef}
+.step-item.active .step-circle{border-color:#c27a3a;background:#c27a3a;color:#fff}
+.step-item.active{color:#c27a3a}
 .step-panel{display:none}
-.step-panel.active{display:block;animation:fadeSlideIn 220ms cubic-bezier(0.16,1,0.3,1)}
-@keyframes fadeSlideIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
-@media(prefers-reduced-motion:reduce){.step-panel.active{animation:none}}
-@media(max-width:600px){
-  .mode-grid{grid-template-columns:1fr}
+.step-panel.active{display:block}
+.mode-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-bottom:20px}
+.mode-card{border-radius:12px;border:2px solid #e0d9ce;padding:16px;text-align:center;cursor:pointer;font-size:13px}
+.mode-card.selected{border-color:#c27a3a;background:#fdf3e7}
+.type-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.type-card{display:flex;gap:8px;align-items:flex-start;padding:10px;border-radius:10px;border:1px solid #e0d9ce;background:#fdfcf9;font-size:12px;cursor:pointer}
+.type-card.selected{border-color:#c27a3a;background:#fdf3e7}
+.type-card input{margin-top:2px}
+.field{margin-bottom:16px;font-size:13px}
+.qty-row{display:flex;align-items:center;gap:8px}
+.qty-btn{width:28px;height:28px;border-radius:999px;border:1px solid #d0c7ba;background:#fdfcf9;cursor:pointer}
+.btn{border-radius:999px;padding:8px 18px;font-size:13px;font-weight:600;border:1px solid transparent;cursor:pointer}
+.btn-primary{background:#c27a3a;color:#fff;border-color:#c27a3a}
+.btn-ghost{background:transparent;color:#7a7168;border-color:#d0c7ba}
+.btn-success{background:#4a7c4e;color:#fff;border-color:#4a7c4e}
+.folder-row{border-radius:8px;border:1px solid #e0d9ce;padding:8px 10px;display:flex;align-items:center;gap:8px;font-size:12px;background:#fdfcf9}
+.folder-path{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.select-wrap{position:relative}
+.select-wrap select{width:100%;padding:8px 28px 8px 10px;border-radius:8px;border:1px solid #e0d9ce;background:#fdfcf9;font-size:13px}
+.output-log{display:none;padding:16px 24px;border-top:1px solid #ece7de;font-size:12px}
+.output-log.visible{display:block}
+.output-file{background:#edf5ee;border-radius:8px;border:1px solid #c7ddc9;padding:8px 10px;margin-bottom:6px;display:flex;align-items:center;gap:8px}
+.output-open-btn{margin-left:auto;font-size:11px;border:none;background:none;color:#4a7c4e;text-decoration:underline;cursor:pointer}
+.app-footer{text-align:center;padding:16px;font-size:11px;color:#9a9187;border-top:1px solid #ece7de}
+@media(max-width:640px){
+  .mode-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
   .type-grid{grid-template-columns:1fr}
-  .field-row{grid-template-columns:1fr}
-  .main-content{padding:var(--space-6) var(--space-4)}
-  .topbar{padding:var(--space-4)}
-  .wizard-body,.wizard-footer{padding:var(--space-5)}
-  .step-label{display:none}
 }
 </style>
 </head>
 <body>
 <div class="app-shell">
-
 <header class="topbar">
-  <div class="topbar-logo">
-    <svg width="28" height="28" viewBox="0 0 28 28" fill="none" aria-label="Test Data Generator">
-      <rect x="5" y="3" width="14" height="18" rx="2" stroke="currentColor" stroke-width="1.8" fill="none"/>
-      <path d="M9 8h6M9 11h6M9 14h4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-      <circle cx="20" cy="20" r="5" fill="currentColor" opacity="0.15"/>
-      <path d="M18 20l1.5 1.5L22 18" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-    </svg>
-    <span class="topbar-title">Test Data &amp; Document Generator</span>
-  </div>
-  <span class="topbar-badge">&#9888; Test Data Only</span>
+  <span>Test Data &amp; Document Generator</span>
+  <span style="font-size:11px;background:#fef6ea;border-radius:999px;border:1px solid #f0d4a0;padding:2px 8px">&#9888; Test Data Only</span>
 </header>
 
 <main class="main-content">
-
-  <div class="disclaimer">
-    <span style="font-size:1.1rem;flex-shrink:0;margin-top:1px">&#128274;</span>
-    <span class="disclaimer-text"><strong>Test documents only.</strong> All generated content is fictional and for testing, demo, or training use only. Not valid for legal, financial, medical, regulatory, or identity purposes.</span>
-  </div>
-
-  <!-- STEP INDICATOR -->
-  <div class="step-indicator" role="list">
-    <div class="step-item active" data-step="1" role="listitem"><div class="step-circle">1</div><span class="step-label">Mode &amp; Type</span></div>
-    <div class="step-item" data-step="2" role="listitem"><div class="step-circle">2</div><span class="step-label">Org Info</span></div>
-    <div class="step-item" data-step="3" role="listitem"><div class="step-circle">3</div><span class="step-label">Settings</span></div>
-    <div class="step-item" data-step="4" role="listitem"><div class="step-circle">4</div><span class="step-label">Generate</span></div>
+  <div class="step-indicator">
+    <div class="step-item active"><div class="step-circle">1</div><div>Mode &amp; Type</div></div>
+    <div class="step-item"><div class="step-circle">2</div><div>Settings</div></div>
+    <div class="step-item"><div class="step-circle">3</div><div>Generate</div></div>
   </div>
 
   <div class="wizard-card">
-
-    <!-- STEP 1: Mode & Document Type -->
+    <!-- STEP 1 -->
     <div class="step-panel active" id="step1">
       <div class="wizard-header">
-        <div class="wizard-step-label">Step 1 of 4</div>
-        <h1 class="wizard-heading">What do you want to generate?</h1>
-        <p class="wizard-desc">Pick a mode, then choose the document or data types you need.</p>
+        <div style="font-size:11px;font-weight:600;text-transform:uppercase;color:#c27a3a;margin-bottom:4px">Step 1 of 3</div>
+        <h1 style="margin:0 0 6px;font-size:22px">What do you want to generate?</h1>
+        <p style="font-size:13px;color:#7a7168;margin:0">Choose your mode and types. All org / party info will be random and fictional.</p>
       </div>
       <div class="wizard-body">
-
-        <div class="mode-grid" id="modeGrid">
+        <div class="mode-grid">
           <div class="mode-card selected" data-mode="documents" onclick="selectMode('documents')">
-            <span class="mode-icon">&#128196;</span>
-            <span class="mode-label">Documents</span>
-            <span class="mode-sub">PDFs, Word, HTML</span>
+            <div style="font-size:20px;margin-bottom:4px">&#128196;</div>
+            <div>Documents</div>
+            <div style="font-size:11px;color:#7a7168">PDF, Word, HTML</div>
           </div>
           <div class="mode-card" data-mode="data" onclick="selectMode('data')">
-            <span class="mode-icon">&#128202;</span>
-            <span class="mode-label">Data Files</span>
-            <span class="mode-sub">CSV, Excel, JSON</span>
+            <div style="font-size:20px;margin-bottom:4px">&#128202;</div>
+            <div>Data Files</div>
+            <div style="font-size:11px;color:#7a7168">Excel data outputs</div>
           </div>
           <div class="mode-card" data-mode="both" onclick="selectMode('both')">
-            <span class="mode-icon">&#10024;</span>
-            <span class="mode-label">Both</span>
-            <span class="mode-sub">Paired sets</span>
+            <div style="font-size:20px;margin-bottom:4px">&#10024;</div>
+            <div>Both</div>
+            <div style="font-size:11px;color:#7a7168">Docs + data sets</div>
           </div>
         </div>
 
-        <!-- Documents panel -->
         <div id="docTypePanel">
-          <div class="section-divider"><div class="section-divider-line"></div><span class="section-divider-label">Choose document types</span><div class="section-divider-line"></div></div>
+          <h3 style="font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:#9a9187;margin:12px 0 8px">Document types</h3>
           <div class="type-grid">
-            <label class="type-card selected" id="tc-invoice">
-              <input type="checkbox" value="invoice" checked onchange="updateTypeCard('tc-invoice',this)">
-              <div><div class="type-card-label">&#129534; Invoice</div><div class="type-card-sub">Vendor billing, line items, totals</div></div>
-            </label>
-            <label class="type-card" id="tc-purchase_order">
-              <input type="checkbox" value="purchase_order" onchange="updateTypeCard('tc-purchase_order',this)">
-              <div><div class="type-card-label">&#128230; Purchase Order</div><div class="type-card-sub">Buyer-side order with items</div></div>
-            </label>
-            <label class="type-card" id="tc-intake_form">
-              <input type="checkbox" value="intake_form" onchange="updateTypeCard('tc-intake_form',this)">
-              <div><div class="type-card-label">&#128203; Intake Form</div><div class="type-card-sub">Registration, application, enrollment</div></div>
-            </label>
-            <label class="type-card" id="tc-sop">
-              <input type="checkbox" value="sop" onchange="updateTypeCard('tc-sop',this)">
-              <div><div class="type-card-label">&#128221; SOP</div><div class="type-card-sub">Step-by-step procedure document</div></div>
-            </label>
-            <label class="type-card" id="tc-contract">
-              <input type="checkbox" value="contract" onchange="updateTypeCard('tc-contract',this)">
-              <div><div class="type-card-label">&#128196; Contract</div><div class="type-card-sub">MSA, PSA, BAA, DUA, SLA</div></div>
-            </label>
-            <label class="type-card" id="tc-offer_letter">
-              <input type="checkbox" value="offer_letter" onchange="updateTypeCard('tc-offer_letter',this)">
-              <div><div class="type-card-label">&#128188; Offer Letter</div><div class="type-card-sub">HR employment offer</div></div>
-            </label>
+            <label class="type-card selected" id="tc-invoice"><input type="checkbox" value="invoice" checked onchange="updateTypeCard('tc-invoice',this)"><div><div>&#129534; Invoice</div><div style="color:#7a7168;font-size:11px">Vendor billing, line items, totals</div></div></label>
+            <label class="type-card" id="tc-purchase_order"><input type="checkbox" value="purchase_order" onchange="updateTypeCard('tc-purchase_order',this)"><div><div>&#128230; Purchase Order</div><div style="color:#7a7168;font-size:11px">Buyer-side order with items</div></div></label>
+            <label class="type-card" id="tc-intake_form"><input type="checkbox" value="intake_form" onchange="updateTypeCard('tc-intake_form',this)"><div><div>&#128203; Intake Form</div><div style="color:#7a7168;font-size:11px">Registration, application, enrollment</div></div></label>
+            <label class="type-card" id="tc-sop"><input type="checkbox" value="sop" onchange="updateTypeCard('tc-sop',this)"><div><div>&#128221; SOP</div><div style="color:#7a7168;font-size:11px">Step-by-step procedure document</div></div></label>
+            <label class="type-card" id="tc-contract"><input type="checkbox" value="contract" onchange="updateTypeCard('tc-contract',this)"><div><div>&#128196; Contract</div><div style="color:#7a7168;font-size:11px">MSA, PSA, BAA, DUA, SLA</div></div></label>
+            <label class="type-card" id="tc-offer_letter"><input type="checkbox" value="offer_letter" onchange="updateTypeCard('tc-offer_letter',this)"><div><div>&#128188; Offer Letter</div><div style="color:#7a7168;font-size:11px">HR employment offer</div></div></label>
           </div>
         </div>
 
-        <!-- Data panel -->
         <div id="dataTypePanel" style="display:none">
-          <div class="section-divider"><div class="section-divider-line"></div><span class="section-divider-label">Choose data types</span><div class="section-divider-line"></div></div>
+          <h3 style="font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:#9a9187;margin:12px 0 8px">Data types</h3>
           <div class="type-grid">
-            <label class="type-card selected" id="tc-customers">
-              <input type="checkbox" value="customers" checked onchange="updateTypeCard('tc-customers',this)">
-              <div><div class="type-card-label">&#128101; Customer Records</div><div class="type-card-sub">Names, contacts, accounts</div></div>
-            </label>
-            <label class="type-card" id="tc-vendors">
-              <input type="checkbox" value="vendors" onchange="updateTypeCard('tc-vendors',this)">
-              <div><div class="type-card-label">&#127970; Vendor Master</div><div class="type-card-sub">Vendor info, codes, contacts</div></div>
-            </label>
-            <label class="type-card" id="tc-transactions">
-              <input type="checkbox" value="transactions" onchange="updateTypeCard('tc-transactions',this)">
-              <div><div class="type-card-label">&#128181; Transactions</div><div class="type-card-sub">Financial transaction rows</div></div>
-            </label>
-            <label class="type-card" id="tc-employees">
-              <input type="checkbox" value="employees" onchange="updateTypeCard('tc-employees',this)">
-              <div><div class="type-card-label">&#128100; Employee Records</div><div class="type-card-sub">HR employee table data</div></div>
-            </label>
-            <label class="type-card" id="tc-messy">
-              <input type="checkbox" value="messy" onchange="updateTypeCard('tc-messy',this)">
-              <div><div class="type-card-label">&#129302; Messy Data Set</div><div class="type-card-sub">Nulls, dupes, bad formatting</div></div>
-            </label>
-            <label class="type-card" id="tc-inventory">
-              <input type="checkbox" value="inventory" onchange="updateTypeCard('tc-inventory',this)">
-              <div><div class="type-card-label">&#128230; Inventory</div><div class="type-card-sub">Products, SKUs, quantities</div></div>
-            </label>
+            <label class="type-card selected" id="tc-customers"><input type="checkbox" value="customers" checked onchange="updateTypeCard('tc-customers',this)"><div><div>&#128101; Customer Records</div><div style="color:#7a7168;font-size:11px">Excel (.xlsx) dataset</div></div></label>
+            <label class="type-card" id="tc-vendors"><input type="checkbox" value="vendors" onchange="updateTypeCard('tc-vendors',this)"><div><div>&#127970; Vendor Master</div><div style="color:#7a7168;font-size:11px">Excel (.xlsx) dataset</div></div></label>
+            <label class="type-card" id="tc-transactions"><input type="checkbox" value="transactions" onchange="updateTypeCard('tc-transactions',this)"><div><div>&#128181; Transactions</div><div style="color:#7a7168;font-size:11px">Excel (.xlsx) dataset</div></div></label>
+            <label class="type-card" id="tc-employees"><input type="checkbox" value="employees" onchange="updateTypeCard('tc-employees',this)"><div><div>&#128100; Employee Records</div><div style="color:#7a7168;font-size:11px">Excel (.xlsx) dataset</div></div></label>
+            <label class="type-card" id="tc-messy"><input type="checkbox" value="messy" onchange="updateTypeCard('tc-messy',this)"><div><div>&#129302; Messy Data</div><div style="color:#7a7168;font-size:11px">Nulls, dupes, bad formatting &#8212; Excel (.xlsx)</div></div></label>
+            <label class="type-card" id="tc-inventory"><input type="checkbox" value="inventory" onchange="updateTypeCard('tc-inventory',this)"><div><div>&#128230; Inventory</div><div style="color:#7a7168;font-size:11px">Excel (.xlsx) dataset</div></div></label>
           </div>
+          <p style="font-size:11px;color:#37506b;margin-top:10px">Data selections always generate Excel (.xlsx) automatically. No format dropdown needed.</p>
         </div>
-
       </div>
       <div class="wizard-footer">
-        <span style="font-size:var(--text-xs);color:var(--color-text-faint)">Select at least one type to continue</span>
-        <button class="btn btn-primary" onclick="goToStep(2)">Next: Org Info <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+        <span style="font-size:11px;color:#9a9187">Select at least one type</span>
+        <button class="btn btn-primary" onclick="goToStep(2)">Next: Settings</button>
       </div>
     </div>
 
-    <!-- STEP 2: Org Info -->
+    <!-- STEP 2 -->
     <div class="step-panel" id="step2">
       <div class="wizard-header">
-        <div class="wizard-step-label">Step 2 of 4</div>
-        <h2 class="wizard-heading">Organization info</h2>
-        <p class="wizard-desc">Optional. Leave blank and we'll generate realistic fictional names and addresses automatically.</p>
+        <div style="font-size:11px;font-weight:600;text-transform:uppercase;color:#c27a3a;margin-bottom:4px">Step 2 of 3</div>
+        <h2 style="margin:0 0 6px;font-size:20px">Output settings</h2>
+        <p style="font-size:13px;color:#7a7168;margin:0">Set quantity, document format, and output folder. Data sets always export to Excel (.xlsx).</p>
       </div>
       <div class="wizard-body">
-        <div class="party-card">
-          <div class="party-title">Org / Buyer <span class="party-badge">Buyer</span></div>
-          <div class="field"><label for="buyerName">Company Name <span class="label-hint">optional</span></label><input type="text" id="buyerName" placeholder="Auto-generated if blank"></div>
-          <div class="field-row">
-            <div class="field"><label>Street Address</label><input type="text" id="buyerAddr1" placeholder="Auto-generated"></div>
-            <div class="field"><label>City, State ZIP</label><input type="text" id="buyerAddr2" placeholder="Auto-generated"></div>
-          </div>
-          <div class="field"><label>Phone</label><input type="text" id="buyerPhone" placeholder="Auto-generated"></div>
-        </div>
-        <div class="party-card">
-          <div class="party-title">Vendor / Provider <span class="party-badge" style="background:#eef3fd;color:#3a5fa8;border-color:#c0d0f0">Vendor</span></div>
-          <div class="field"><label for="vendorName">Company Name <span class="label-hint">optional</span></label><input type="text" id="vendorName" placeholder="Auto-generated if blank"></div>
-          <div class="field-row">
-            <div class="field"><label>Street Address</label><input type="text" id="vendorAddr1" placeholder="Auto-generated"></div>
-            <div class="field"><label>City, State ZIP</label><input type="text" id="vendorAddr2" placeholder="Auto-generated"></div>
-          </div>
-          <div class="field"><label>Phone</label><input type="text" id="vendorPhone" placeholder="Auto-generated"></div>
-        </div>
-      </div>
-      <div class="wizard-footer">
-        <button class="btn btn-ghost" onclick="goToStep(1)"><svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M13 8H3M7 4L3 8l4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg> Back</button>
-        <button class="btn btn-primary" onclick="goToStep(3)">Next: Settings <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
-      </div>
-    </div>
-
-    <!-- STEP 3: Settings -->
-    <div class="step-panel" id="step3">
-      <div class="wizard-header">
-        <div class="wizard-step-label">Step 3 of 4</div>
-        <h2 class="wizard-heading">Output settings</h2>
-        <p class="wizard-desc">Set quantity, format, and where to save your files.</p>
-      </div>
-      <div class="wizard-body">
-        <div class="field" style="margin-bottom:var(--space-6)">
+        <div class="field">
           <label>How many of each type?</label>
           <div class="qty-row">
             <button class="qty-btn" onclick="adjustQty(-1)">&#8722;</button>
-            <span class="qty-val" id="qtyVal">1</span>
-            <button class="qty-btn" onclick="adjustQty(1)">&#43;</button>
-            <span style="font-size:var(--text-xs);color:var(--color-text-muted);margin-left:var(--space-2)">per selected type</span>
+            <span id="qtyVal">1</span>
+            <button class="qty-btn" onclick="adjustQty(1)">+</button>
+            <span style="font-size:11px;color:#7a7168;margin-left:4px">per selected type</span>
           </div>
         </div>
-        <div class="field" style="margin-bottom:var(--space-6)">
-          <label for="exportFormat">Export Format</label>
-          <div class="select-wrap"><select id="exportFormat"><option value="html">HTML (view in browser)</option><option value="pdf">PDF (coming soon)</option><option value="docx">Word .docx (coming soon)</option></select></div>
+        <div class="field">
+          <label>Document format</label>
+          <div class="select-wrap">
+            <select id="exportFormat">
+              <option value="" selected>Choose one&#8230;</option>
+              <option value="pdf">PDF</option>
+              <option value="docx">Word .docx</option>
+              <option value="html">HTML</option>
+            </select>
+          </div>
         </div>
         <div class="field">
-          <label>Output Folder</label>
+          <label>Output folder</label>
           <div class="folder-row">
             <span>&#128193;</span>
             <span class="folder-path" id="folderPath">~/Documents/sample_docs</span>
-            <button class="btn-sm" onclick="chooseFolder()">Change&hellip;</button>
+            <button class="btn" style="font-size:11px;padding:4px 10px" onclick="chooseFolder()">Change&#8230;</button>
           </div>
         </div>
       </div>
       <div class="wizard-footer">
-        <button class="btn btn-ghost" onclick="goToStep(2)"><svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M13 8H3M7 4L3 8l4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg> Back</button>
-        <button class="btn btn-primary" onclick="goToStep(4)">Review &amp; Generate <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+        <button class="btn btn-ghost" onclick="goToStep(1)">Back</button>
+        <button class="btn btn-primary" onclick="goToStep(3)">Review &amp; Generate</button>
       </div>
     </div>
 
-    <!-- STEP 4: Generate -->
-    <div class="step-panel" id="step4">
+    <!-- STEP 3 -->
+    <div class="step-panel" id="step3">
       <div class="wizard-header">
-        <div class="wizard-step-label">Step 4 of 4</div>
-        <h2 class="wizard-heading">Review &amp; generate</h2>
-        <p class="wizard-desc">Everything look right? Hit Generate to create your test files.</p>
+        <div style="font-size:11px;font-weight:600;text-transform:uppercase;color:#c27a3a;margin-bottom:4px">Step 3 of 3</div>
+        <h2 style="margin:0 0 6px;font-size:20px">Review &amp; generate</h2>
+        <p style="font-size:13px;color:#7a7168;margin:0">Review your selections then hit generate.</p>
       </div>
       <div class="wizard-body">
         <div id="reviewSection"></div>
       </div>
       <div class="output-log" id="outputLog"></div>
       <div class="wizard-footer">
-        <button class="btn btn-ghost" id="backBtn4" onclick="goToStep(3)"><svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M13 8H3M7 4L3 8l4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg> Back</button>
-        <button class="btn btn-success" id="generateBtn" onclick="generate()">&#10022; Generate Test Files</button>
+        <button class="btn btn-ghost" id="backBtn3" onclick="goToStep(2)">Back</button>
+        <button class="btn btn-success" id="generateBtn" onclick="generate()">Generate Test Files</button>
       </div>
     </div>
-
   </div>
 </main>
 
-<footer class="app-footer">Test Data &amp; Document Generator &mdash; All output is fictional and for testing use only &mdash; Not for production</footer>
+<footer class="app-footer">All output is fictional and for testing / demo use only.</footer>
 </div>
 
 <script>
 let currentStep = 1;
 let qty = 1;
 let selectedMode = 'documents';
+const DOC_TYPES = ['invoice','purchase_order','intake_form','sop','contract','offer_letter'];
+const DATA_TYPES = ['customers','vendors','transactions','employees','inventory','messy'];
 
-function selectMode(mode) {
+function selectMode(mode){
   selectedMode = mode;
   document.querySelectorAll('.mode-card').forEach(c => c.classList.toggle('selected', c.dataset.mode === mode));
   const showDocs = mode === 'documents' || mode === 'both';
-  const showData = mode === 'data'     || mode === 'both';
-  document.getElementById('docTypePanel').style.display  = showDocs ? '' : 'none';
+  const showData = mode === 'data' || mode === 'both';
+  document.getElementById('docTypePanel').style.display = showDocs ? '' : 'none';
   document.getElementById('dataTypePanel').style.display = showData ? '' : 'none';
 }
+function updateTypeCard(id, cb){ document.getElementById(id).classList.toggle('selected', cb.checked); }
+function adjustQty(delta){ qty = Math.max(1, Math.min(20, qty + delta)); document.getElementById('qtyVal').textContent = qty; }
 
-function updateTypeCard(wrapId, cb) {
-  document.getElementById(wrapId).classList.toggle('selected', cb.checked);
-}
-
-function adjustQty(delta) {
-  qty = Math.max(1, Math.min(20, qty + delta));
-  document.getElementById('qtyVal').textContent = qty;
-}
-
-function goToStep(n) {
-  document.getElementById(`step${currentStep}`).classList.remove('active');
-  document.querySelectorAll('.step-item').forEach((el, i) => {
-    const s = i + 1;
-    el.classList.remove('active','done');
-    if (s < n) el.classList.add('done');
-    if (s === n) el.classList.add('active');
+function goToStep(n){
+  document.getElementById('step'+currentStep).classList.remove('active');
+  document.querySelectorAll('.step-item').forEach((el,i)=>{
+    const step = i+1;
+    el.classList.toggle('active', step === n);
     const circle = el.querySelector('.step-circle');
-    circle.innerHTML = s < n
-      ? `<svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M3 8.5l3.5 3.5 6-7" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`
-      : s;
+    circle.textContent = step;
   });
   currentStep = n;
-  document.getElementById(`step${currentStep}`).classList.add('active');
-  if (n === 4) buildReview();
+  document.getElementById('step'+currentStep).classList.add('active');
+  if(n===3) buildReview();
 }
 
-function chooseFolder() {
-  if (window.pywebview) {
-    window.pywebview.api.choose_folder().then(f => { if (f) document.getElementById('folderPath').textContent = f; });
-  } else {
-    const m = prompt('Output folder path:', document.getElementById('folderPath').textContent);
-    if (m) document.getElementById('folderPath').textContent = m;
+function chooseFolder(){
+  if(window.pywebview && window.pywebview.api && window.pywebview.api.choose_folder){
+    window.pywebview.api.choose_folder().then(f => { if(f) document.getElementById('folderPath').textContent = f; });
+  }else{
+    const m = prompt('Output folder:', document.getElementById('folderPath').textContent);
+    if(m) document.getElementById('folderPath').textContent = m;
   }
 }
 
-function getSelectedTypes() {
-  const types = [];
-  document.querySelectorAll('.type-card input[type=checkbox]:checked').forEach(cb => types.push(cb.value));
-  return types;
+function getSelectedTypes(){
+  return Array.from(document.querySelectorAll('.type-card input[type=checkbox]:checked')).map(cb=>cb.value);
 }
 
-function buildReview() {
+function buildReview(){
   const types = getSelectedTypes();
-  const folder = document.getElementById('folderPath').textContent;
   const format = document.getElementById('exportFormat').value;
-  const items = [
-    ['Mode', selectedMode.charAt(0).toUpperCase() + selectedMode.slice(1)],
-    ['Types', types.length ? types.join(', ') : 'None selected'],
-    ['Quantity', `${qty} per type`],
-    ['Format', format.toUpperCase()],
-    ['Buyer', document.getElementById('buyerName').value || 'Auto-generated'],
-    ['Vendor', document.getElementById('vendorName').value || 'Auto-generated'],
-    ['Output Folder', folder],
-    ['Total Files', `~${types.length * qty}`],
+  const hasDocs = types.some(t=>DOC_TYPES.includes(t)) && (selectedMode==='documents' || selectedMode==='both');
+  const docFormat = hasDocs ? (format || 'Choose one…') : 'Not needed (data only)';
+  const hasData = types.some(t=>DATA_TYPES.includes(t)) && (selectedMode==='data' || selectedMode==='both');
+  const rows = [
+    ['Mode', selectedMode.charAt(0).toUpperCase()+selectedMode.slice(1)],
+    ['Types', types.length ? types.join(', ') : 'None'],
+    ['Quantity', qty + ' per type'],
+    ['Document format', docFormat],
+    ['Data output', hasData ? 'Excel (.xlsx) automatic' : 'None'],
+    ['Org / Parties', 'Random fictional data'],
+    ['Output folder', document.getElementById('folderPath').textContent],
+    ['Total files', '~'+(types.length*qty)]
   ];
-  const grid = items.map(([l,v]) => `<div class="review-item"><div class="review-item-label">${l}</div><div class="review-item-value">${v}</div></div>`).join('');
-  document.getElementById('reviewSection').innerHTML = `<div class="review-block"><div class="review-block-header">Summary</div><div class="review-grid">${grid}</div></div>`;
+  const html = rows.map(([k,v])=>`<div style="padding:8px 10px;border-bottom:1px solid #ece7de"><div style="font-size:11px;color:#9a9187">${k}</div><div style="font-size:13px;font-weight:500">${v}</div></div>`).join('');
+  document.getElementById('reviewSection').innerHTML = `<div style="border-radius:10px;border:1px solid #e0d9ce;overflow:hidden"><div style="background:#f0ece4;font-size:11px;font-weight:600;padding:8px 10px;text-transform:uppercase;letter-spacing:.08em;color:#7a7168">Summary</div>${html}</div>`;
   document.getElementById('outputLog').classList.remove('visible');
-  document.getElementById('generateBtn').disabled = false;
-  document.getElementById('backBtn4').style.display = '';
+  const btn = document.getElementById('generateBtn');
+  btn.disabled = false;
+  btn.textContent = 'Generate Test Files';
 }
 
-function generate() {
+function generate(){
   const types = getSelectedTypes();
-  if (!types.length) { alert('Please select at least one type.'); return; }
-  document.getElementById('generateBtn').disabled = true;
-  document.getElementById('generateBtn').textContent = 'Generating\u2026';
-  document.getElementById('backBtn4').style.display = 'none';
+  if(!types.length){ alert('Select at least one type.'); return; }
+  const format = document.getElementById('exportFormat').value;
+  const wantsDocs = types.some(t=>DOC_TYPES.includes(t)) && (selectedMode==='documents' || selectedMode==='both');
+  if(wantsDocs && !format){
+    alert('Choose a document format for document generation.');
+    return;
+  }
+  const btn = document.getElementById('generateBtn');
+  btn.disabled = true;
+  btn.textContent = 'Generating…';
+  document.getElementById('backBtn3').style.display = 'none';
 
   const payload = {
-    buyerName:    document.getElementById('buyerName').value.trim(),
-    vendorName:   document.getElementById('vendorName').value.trim(),
+    buyerName: '',
+    vendorName: '',
     contractType: 'MSA',
-    docTypes:     types,
-    quantity:     qty,
+    docTypes: types,
+    quantity: qty,
     outputFolder: document.getElementById('folderPath').textContent,
-    format:       document.getElementById('exportFormat').value,
+    format: format,
+    mode: selectedMode
   };
 
-  if (window.pywebview) {
-    window.pywebview.api.generate(payload).then(res => showResults(res));
-  } else {
-    setTimeout(() => showResults({ success: true, files: types.flatMap(t => Array.from({length:qty},(_,i)=>t+'-sample-'+(i+1)+'.html')), folder: payload.outputFolder }), 900);
+  if(window.pywebview && window.pywebview.api && window.pywebview.api.generate){
+    window.pywebview.api.generate(payload).then(showResults).catch(err=>{
+      alert('Generation failed: '+err);
+      resetGenerateState();
+    });
+  }else{
+    setTimeout(()=>showResults({success:true, files:['sample-output.pdf'], folder:payload.outputFolder}),500);
   }
 }
 
-function showResults(res) {
+function resetGenerateState(){
+  const btn = document.getElementById('generateBtn');
+  btn.disabled = false;
+  btn.textContent = 'Generate Test Files';
+  document.getElementById('backBtn3').style.display = '';
+}
+
+function showResults(res){
+  if(!res || res.success===false){
+    alert('Generation failed: '+((res && res.error) ? res.error : 'Unknown error'));
+    resetGenerateState();
+    return;
+  }
   const log = document.getElementById('outputLog');
-  log.innerHTML = res.files.map(f => {
-    const name = f.split(/[\\/]/).pop();
-    return `<div class="output-file">&#9989; ${name}<button class="output-open-btn" onclick="openFile('${f}')">Open</button></div>`;
-  }).join('');
-  if (res.folder) {
-    log.innerHTML += `<button class="btn btn-ghost" style="align-self:flex-start;margin-top:var(--space-2)" onclick="openFolder('${res.folder}')">&#128193; Open Output Folder</button>`;
+  log.innerHTML = '';
+  (res.files || []).forEach(f=>{
+    const name = String(f).split(/[\\/]/).pop();
+    log.innerHTML += `<div class="output-file">&#9989; ${name}<button class="output-open-btn" onclick="openPath('${String(f).replace(/\\/g,'\\\\')}')">Open</button></div>`;
+  });
+  if(res.folder){
+    log.innerHTML += `<button class="btn btn-ghost" style="margin-top:6px;font-size:11px" onclick="openPath('${String(res.folder).replace(/\\/g,'\\\\')}')">&#128193; Open Output Folder</button>`;
   }
   log.classList.add('visible');
-  document.getElementById('generateBtn').textContent = '\u2714 Done \u2014 Generate More?';
-  document.getElementById('generateBtn').disabled = false;
-  document.getElementById('backBtn4').style.display = '';
+  const btn = document.getElementById('generateBtn');
+  btn.disabled = false;
+  btn.textContent = 'Done — Generate More?';
+  document.getElementById('backBtn3').style.display = '';
 }
 
-function openFile(path) {
-  if (window.pywebview) window.pywebview.api.open_folder(path);
-}
-function openFolder(path) {
-  if (window.pywebview) window.pywebview.api.open_folder(path);
+function openPath(path){
+  if(window.pywebview && window.pywebview.api && window.pywebview.api.open_path){
+    window.pywebview.api.open_path(path);
+  }else if(window.pywebview && window.pywebview.api && window.pywebview.api.open_folder){
+    window.pywebview.api.open_folder(path);
+  }
 }
 </script>
 </body>
