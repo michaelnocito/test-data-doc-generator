@@ -110,3 +110,17 @@ test-data-doc-generator/
 - User-entered output folder paths are not stored or transmitted
 - Generated files stay on your machine in the folder you choose
 - See [PRIVACY.md](PRIVACY.md) for full details
+
+---
+
+If this project saved you time, the best thing you can do is [⭐ star the repo](https://github.com/michaelnocito/test-data-doc-generator) — it helps others find it.
+
+If you'd like to support the work, a coffee is always appreciated but never expected.
+
+<a href="https://buymeacoffee.com/michaelnocito" target="_blank">
+  <img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" height="50">
+</a>
+
+---
+
+Built with 🐍 Python | Maintained by [Michael Nocito](https://github.com/michaelnocito)
