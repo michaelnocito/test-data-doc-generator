@@ -20,17 +20,23 @@ All notable changes to this project are documented here.
 
 **Data generation**
 - Customer Records, Vendor Master, Transactions, Employee Records, Inventory, Messy Data
-- All data types export as Excel `.xlsx` (openpyxl) automatically — no format selection needed
-- Messy Data includes nulls, duplicates, inconsistent casing, and bad formatting for cleanup testing
+- All data types export as Excel `.xlsx` (openpyxl) automatically
+- Messy Data includes nulls, duplicates, inconsistent casing, bad formatting for cleanup testing
 
 **Output**
-- Choose any output folder via native folder picker dialog
-- Open individual files or the output folder directly from the app after generation
-- All filenames include a random hex token to prevent overwriting
+- Native folder picker dialog for output folder selection
+- Open individual files or output folder directly from the app
+- Random hex token in filenames prevents overwriting
+
+**Distribution**
+- Windows installer built with Inno Setup
+- Start Menu and Desktop shortcuts created on install
+- Uninstaller registered in Windows Settings → Apps
+- Standalone `.exe` also available via PyInstaller
 
 **Safety**
 - Disclaimer row injected into every Excel file
-- Disclaimer block included in every document body
+- Disclaimer block in every document body
 - No real personal data used anywhere
 - Fully offline — no network calls
 
@@ -38,7 +44,6 @@ All notable changes to this project are documented here.
 
 ## Upcoming
 
-- Windows EXE release via PyInstaller
 - Additional document types (NDA, SOW, Work Order)
 - Configurable row count for data sets
 - Dark mode UI toggle

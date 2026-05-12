@@ -6,6 +6,17 @@ A Windows desktop app that generates **fictional** PDFs, Word docs, HTML files, 
 
 ---
 
+## ⬇️ Download & Install (Windows)
+
+1. Go to [**Releases**](https://github.com/michaelnocito/test-data-doc-generator/releases)
+2. Download `TestDataDocGeneratorSetup.exe`
+3. Double-click the installer and follow the wizard (Next → Next → Finish)
+4. Launch from the **Desktop shortcut** or **Start Menu**
+
+No Python required. Works on Windows 10 and Windows 11.
+
+---
+
 ## Features
 
 - 3-step wizard: **Mode & Type → Settings → Generate**
@@ -29,34 +40,6 @@ A Windows desktop app that generates **fictional** PDFs, Word docs, HTML files, 
 
 ---
 
-## Requirements
-
-- Windows 10 or Windows 11
-- Python 3.11 or higher
-- `pip` available in your PATH
-
----
-
-## Installation
-
-```powershell
-git clone https://github.com/michaelnocito/test-data-doc-generator.git
-cd test-data-doc-generator
-pip install -r requirements.txt
-```
-
----
-
-## Running the App
-
-```powershell
-python main.py
-```
-
-The wizard window will open. No browser needed.
-
----
-
 ## How to Use
 
 **Step 1 — Mode & Type**
@@ -76,16 +59,37 @@ The wizard window will open. No browser needed.
 
 ---
 
+## Run from Source (Developers)
+
+If you prefer to run the Python source directly:
+
+```powershell
+git clone https://github.com/michaelnocito/test-data-doc-generator.git
+cd test-data-doc-generator
+pip install -r requirements.txt
+python main.py
+```
+
+Requires Python 3.11+ and pip.
+
+---
+
 ## Project Structure
 
 ```
 test-data-doc-generator/
-├── main.py           # App logic, data generation, pywebview API
-├── ui.html           # Wizard UI (loaded by pywebview at runtime)
-├── requirements.txt  # Python dependencies
-├── INSTALL.md        # Windows installer / EXE build instructions
+├── main.py                    # App logic, data generation, pywebview API
+├── ui.html                    # Wizard UI (loaded by pywebview at runtime)
+├── installer.iss              # Inno Setup installer script
+├── requirements.txt           # Python dependencies
+├── CHANGELOG.md
+├── INSTALL.md                 # EXE + installer build instructions
+├── PRIVACY.md
 ├── .gitignore
-└── README.md
+├── README.md
+└── docs/
+    ├── TROUBLESHOOTING.md
+    └── CONTRIBUTING.md
 ```
 
 ---
@@ -93,6 +97,7 @@ test-data-doc-generator/
 ## Safety & Privacy
 
 - No real personal data is ever used in generated output
-- No network calls are made — fully offline
+- No network calls — fully offline
 - User-entered output folder paths are not stored or transmitted
 - Generated files stay on your machine in the folder you choose
+- See [PRIVACY.md](PRIVACY.md) for full details
