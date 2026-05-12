@@ -4,6 +4,14 @@ Common issues and fixes when running the Test Data & Document Generator.
 
 ---
 
+## App window opens but is blank white
+
+**Cause:** WebView2 runtime is missing or outdated on the machine.
+
+**Fix:** Download and install the [Microsoft Edge WebView2 Runtime](https://developer.microsoft.com/en-us/microsoft-edge/webview2/) (free, from Microsoft). pywebview on Windows requires WebView2. After installing, relaunch the app.
+
+---
+
 ## App opens as raw text / HTML code instead of a window
 
 **Cause:** pywebview was passed a file path via `url=` instead of the HTML content directly. Windows can mishandle local file paths in the WebView2 component and render raw source instead of the page.
@@ -92,11 +100,3 @@ If that still fails, install manually:
 ```powershell
 pip install pywebview reportlab python-docx openpyxl
 ```
-
----
-
-## App window opens but is blank white
-
-**Cause:** WebView2 runtime is missing or outdated on the machine.
-
-**Fix:** Download and install the [Microsoft Edge WebView2 Runtime](https://developer.microsoft.com/en-us/microsoft-edge/webview2/) (free, from Microsoft). pywebview on Windows requires WebView2.

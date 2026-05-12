@@ -15,6 +15,8 @@ A Windows desktop app that generates **fictional** PDFs, Word docs, HTML files, 
 
 No Python required. Works on Windows 10 and Windows 11.
 
+> **Blank white screen after launch?** Your machine may be missing the Microsoft Edge WebView2 Runtime — this is required by the app. [Download it free from Microsoft](https://developer.microsoft.com/en-us/microsoft-edge/webview2/) and reinstall. See [Troubleshooting](docs/TROUBLESHOOTING.md) for more help.
+
 ---
 
 ## Features
@@ -91,6 +93,13 @@ test-data-doc-generator/
     ├── TROUBLESHOOTING.md
     └── CONTRIBUTING.md
 ```
+
+---
+
+## Need Help?
+
+- [Installation & Build Guide](INSTALL.md)
+- [Troubleshooting](docs/TROUBLESHOOTING.md)
 
 ---
 

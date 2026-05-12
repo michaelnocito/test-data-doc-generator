@@ -14,6 +14,8 @@ Download the latest `TestDataDocGeneratorSetup.exe` from the [Releases page](htt
 
 No Python required.
 
+> **Blank white screen after launch?** Install the [Microsoft Edge WebView2 Runtime](https://developer.microsoft.com/en-us/microsoft-edge/webview2/) (free, from Microsoft) — pywebview requires it on Windows.
+
 ---
 
 ## Option 2 — Run from Python Source
@@ -61,4 +63,4 @@ ui_path = base_path / "ui.html"
 2. Build the EXE first using Option 3 above
 3. Open Inno Setup → File → Open → select `installer.iss` from the project folder
 4. Press **F9** to compile
-5. Installer output: `Output\TestDataDocGeneratorSetup.exe`
+5. Installer output location depends on your `installer.iss` `OutputDir` setting — by default it writes to an `Output\` folder inside the project directory. If you moved or customized the script, check the `OutputDir` line at the top of `installer.iss` for the exact path.
