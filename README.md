@@ -1,6 +1,6 @@
 # Test Data & Document Generator
 
-### Generate realistic test files in seconds. No Python. No fake data leaks.
+### Generate realistic test files in seconds. No fake data leaks.
 
 A Windows desktop app by Michael Nocito.
 
@@ -29,6 +29,19 @@ You will pick what you need, how many, and where to save them. The app
 does the rest. By the end you will have test files you can drop straight
 into a QA run, a demo, or a training session without ever touching real
 customer data.
+
+---
+
+## Two Ways to Use It
+
+Pick whichever fits you. Both produce the same files.
+
+- **Desktop app (Windows installer)** — No Python required. Best if you
+  just want to download, click, and generate files. Jump to
+  [Download & Install](#%EF%B8%8F-download--install-windows).
+- **Run from Python source** — Best if you want to read the code,
+  customize it, extend it, or learn from it. Jump to
+  [Run from Source](#run-from-source-developers).
 
 ---
 
