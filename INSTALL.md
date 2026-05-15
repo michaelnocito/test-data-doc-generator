@@ -1,10 +1,15 @@
 # Installation & Build Guide
 
+You have four ways to get the app running. Pick the one that fits how
+you want to use it.
+
 ---
 
 ## Option 1 — Windows Installer (Recommended)
 
-Download the latest `TestDataDocGeneratorSetup.exe` from the [Releases page](https://github.com/michaelnocito/test-data-doc-generator/releases).
+The fastest path. Download, click, generate. No Python on your machine.
+
+Grab the latest `TestDataDocGeneratorSetup.exe` from the [Releases page](https://github.com/michaelnocito/test-data-doc-generator/releases).
 
 1. Double-click `TestDataDocGeneratorSetup.exe`
 2. Click **Next** through the install wizard
@@ -12,7 +17,7 @@ Download the latest `TestDataDocGeneratorSetup.exe` from the [Releases page](htt
 4. Find the app in your **Start Menu** or on your **Desktop**
 5. To uninstall: Windows Settings → Apps → Test Data & Document Generator → Uninstall
 
-No Python required.
+You do not need Python for this path.
 
 > **Blank white screen after launch?** Install the [Microsoft Edge WebView2 Runtime](https://developer.microsoft.com/en-us/microsoft-edge/webview2/) (free, from Microsoft) — pywebview requires it on Windows.
 
@@ -20,7 +25,8 @@ No Python required.
 
 ## Option 2 — Run from Python Source
 
-Requires Python 3.11+ and pip.
+Use this when you want to read, customize, or extend the code. Requires
+Python 3.11+ and pip.
 
 ```powershell
 git clone https://github.com/michaelnocito/test-data-doc-generator.git
@@ -33,6 +39,7 @@ python main.py
 
 ## Option 3 — Build the EXE Yourself (PyInstaller)
 
+Want your own standalone `.exe`? You can build one in a single command.
 From the project folder in PowerShell:
 
 ```powershell
@@ -47,7 +54,8 @@ Output: `dist\TestDataDocGenerator.exe`
 
 ### ui.html path fix for bundled EXE
 
-If the UI does not load after building, update `main.py`:
+If the UI does not load after building, update `main.py` so the bundled
+EXE can find `ui.html`:
 
 ```python
 import sys
@@ -58,6 +66,8 @@ ui_path = base_path / "ui.html"
 ---
 
 ## Option 4 — Build the Installer Yourself (Inno Setup)
+
+You can roll your own Windows installer with a few steps:
 
 1. Install [Inno Setup](https://jrsoftware.org/isdl.php) (free)
 2. Build the EXE first using Option 3 above

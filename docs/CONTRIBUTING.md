@@ -2,11 +2,15 @@
 
 This is a private project. Contributions are by invitation only.
 
+If you are working on the code with access, this guide walks you
+through the rhythm: report cleanly, suggest sharply, ship changes with
+care.
+
 ---
 
 ## Reporting Issues
 
-If you have access to this repo and find a bug:
+Found a bug? You can help fix it fastest by filing a tight report.
 
 1. Go to **Issues** → **New Issue**
 2. Include:
@@ -20,7 +24,8 @@ If you have access to this repo and find a bug:
 
 ## Suggesting Features
 
-Open an issue with the label `enhancement`. Good suggestions include:
+You can shape the roadmap by opening an issue with the label
+`enhancement`. Strong suggestions include:
 
 - New document types (NDA, SOW, Work Order, etc.)
 - New data set types
@@ -31,7 +36,7 @@ Open an issue with the label `enhancement`. Good suggestions include:
 
 ## Making Changes
 
-If you have write access:
+With write access, you can ship a change end to end:
 
 1. Create a branch from `main`:
    ```powershell
@@ -50,6 +55,8 @@ If you have write access:
 
 ## Code Standards
 
+Keep changes consistent with the rest of the project:
+
 - Python 3.11+
 - No external data sources — all generated content must be synthetic
 - No real personal data in defaults, seeds, examples, or comments
@@ -61,7 +68,7 @@ If you have write access:
 
 ## Privacy Rule (Non-Negotiable)
 
-Before pushing any commit, check line by line:
+Before pushing any commit, scan your diff line by line:
 - No real names, addresses, emails, or phone numbers
 - No real company names
 - No sample output files committed to the repo

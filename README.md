@@ -20,15 +20,14 @@ When ready, replace this comment with:
 
 > ⚠️ All output is synthetic and fictional. Never use for legal, financial, medical, regulatory, or identity purposes.
 
-Test Data & Document Generator turns a few clicks into a folder full of
-realistic — but completely fictional — business documents and data sets.
-Invoices, purchase orders, contracts, offer letters, customer records,
-transactions, even intentionally messy spreadsheets for cleanup drills.
+You can generate a folder full of realistic — but completely fictional —
+business documents and data sets in a few clicks. Invoices, purchase
+orders, contracts, offer letters, customer records, transactions, even
+intentionally messy spreadsheets for cleanup drills.
 
-You will pick what you need, how many, and where to save them. The app
-does the rest. By the end you will have test files you can drop straight
-into a QA run, a demo, or a training session without ever touching real
-customer data.
+Pick what you need, how many, and where to save them. The app handles
+the rest. You end up with test files you can drop straight into a QA
+run, a demo, or a training session — no real customer data involved.
 
 ---
 
@@ -36,12 +35,12 @@ customer data.
 
 Pick whichever fits you. Both produce the same files.
 
-- **Desktop app (Windows installer)** — No Python required. Best if you
-  just want to download, click, and generate files. Jump to
+- **Desktop app (Windows installer)** — You can run it without Python.
+  Download, click, generate files. Jump to
   [Download & Install](#%EF%B8%8F-download--install-windows).
-- **Run from Python source** — Best if you want to read the code,
-  customize it, extend it, or learn from it. Jump to
-  [Run from Source](#run-from-source-developers).
+- **Run from Python source** — You can also use the source when you
+  want to read the code, customize it, extend it, or learn from it.
+  Jump to [Run from Source](#run-from-source-developers).
 
 ---
 
@@ -49,7 +48,7 @@ Pick whichever fits you. Both produce the same files.
 
 Open the app and you get a 3-step wizard: pick your file types, choose
 how many and what format, then generate. Names, addresses, and party
-details are randomized for every file. Output lands in a folder you
+details are randomized for every file. Output lands in the folder you
 choose, and you can open any file directly from the app the moment it
 finishes.
 
@@ -74,7 +73,7 @@ When ready, replace this comment with:
 3. Double-click the installer and follow the wizard (Next → Next → Finish)
 4. Launch from the **Desktop shortcut** or **Start Menu**
 
-No Python required. Works on Windows 10 and Windows 11.
+You do not need Python for this path. Works on Windows 10 and Windows 11.
 
 > **Blank white screen after launch?** Your machine may be missing the
 > Microsoft Edge WebView2 Runtime — this is required by the app.
@@ -138,26 +137,28 @@ When ready, replace this comment with:
 - Messy Data — nulls, duplicates, bad formatting (great for cleanup testing)
 
 Every org name, address, contact, and party detail is randomly generated
-per file. Pick an output folder, open files directly from the app when
-generation finishes.
+per file. Pick an output folder, then open files directly from the app
+when generation finishes.
 
 ---
 
 ## Who This Is For
 
-- **QA engineers** who need varied, realistic test files without scrubbing real data
+- **QA engineers** who want varied, realistic test files without scrubbing real data
 - **Sales and solutions teams** building demos that can't use customer documents
 - **Trainers and bootcamps** running data-cleaning, document-processing, or migration exercises
 - **Developers** testing import pipelines, OCR, parsers, or doc workflows on safe sample data
 
-If you have ever rebuilt the same "fake invoice" by hand for the third
-time this month, this tool is for you.
+If you build, test, or teach with documents and data, you can use this
+to skip the busywork of hand-crafting sample files and focus on the
+work that matters.
 
 ---
 
 ## Run from Source (Developers)
 
-If you prefer to run the Python source directly:
+You can also run the Python source directly — handy when you want to
+inspect the code, tweak it, or extend it with your own document types.
 
 ```powershell
 git clone https://github.com/michaelnocito/test-data-doc-generator.git
@@ -168,7 +169,7 @@ python main.py
 
 Requires Python 3.11+ and pip.
 
-For building your own EXE or installer, see [INSTALL.md](INSTALL.md).
+To build your own EXE or installer, see [INSTALL.md](INSTALL.md).
 
 ---
 
@@ -213,10 +214,10 @@ test-data-doc-generator/
 ## More Tools
 
 **[🧼 Spreadsheet Cleaner](https://github.com/michaelnocito/spreadsheet-cleaner)** —
-A Python learning project that teaches you to build a real
-data-cleaning tool, the kind used in professional data migration work.
-Three layers: Basic, Intermediate, and Advanced. Pairs perfectly with
-the **Messy Data** output from this generator.
+A Python learning project where you build a real data-cleaning tool,
+the kind used in professional data migration work. Three layers: Basic,
+Intermediate, and Advanced. Pairs well with the **Messy Data** output
+from this generator.
 
 ---
 

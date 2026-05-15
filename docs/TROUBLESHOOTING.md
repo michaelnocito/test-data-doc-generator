@@ -1,6 +1,7 @@
 # Troubleshooting
 
-Common issues and fixes when running the Test Data & Document Generator.
+Hit a snag? You can usually unstick the app in a minute or two. Find
+your symptom below and follow the fix.
 
 ---
 
