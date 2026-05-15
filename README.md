@@ -1,8 +1,56 @@
 # Test Data & Document Generator
 
-A Windows desktop app that generates **fictional** PDFs, Word docs, HTML files, and Excel data sets for testing, QA, demos, and training workflows.
+### Generate realistic test files in seconds. No Python. No fake data leaks.
+
+A Windows desktop app by Michael Nocito.
+
+<!--
+VISUAL PLACEMENT 1 — Hero banner
+Future path: docs/images/hero-banner.png
+Alt text: Test Data & Document Generator — fictional PDFs, Word docs, HTML, and Excel for QA and demos
+To create: a wide hero banner (~1600×500). Left side shows stacked
+sample outputs (an invoice PDF, a contract Word doc, and an Excel
+sheet with customer rows); right side shows the 3-step wizard UI
+(Mode & Type → Settings → Generate). Project name + tagline overlaid.
+When ready, replace this comment with:
+![Test Data & Document Generator — fictional PDFs, Word docs, HTML, and Excel for QA and demos](docs/images/hero-banner.png)
+-->
+
+---
 
 > ⚠️ All output is synthetic and fictional. Never use for legal, financial, medical, regulatory, or identity purposes.
+
+Test Data & Document Generator turns a few clicks into a folder full of
+realistic — but completely fictional — business documents and data sets.
+Invoices, purchase orders, contracts, offer letters, customer records,
+transactions, even intentionally messy spreadsheets for cleanup drills.
+
+You will pick what you need, how many, and where to save them. The app
+does the rest. By the end you will have test files you can drop straight
+into a QA run, a demo, or a training session without ever touching real
+customer data.
+
+---
+
+## See It In Action
+
+Open the app and you get a 3-step wizard: pick your file types, choose
+how many and what format, then generate. Names, addresses, and party
+details are randomized for every file. Output lands in a folder you
+choose, and you can open any file directly from the app the moment it
+finishes.
+
+<!--
+VISUAL PLACEMENT 2 — Product screenshot or short GIF
+Future path: docs/images/wizard.png (or wizard.gif)
+Alt text: 3-step wizard generating fictional PDFs and Excel data files
+To create: a screenshot or 8–12s GIF of the running app showing
+the Mode & Type → Settings → Generate flow. End on the success
+state with the generated file list visible. PNG is fine; GIF is
+better if easy to record.
+When ready, replace this comment with:
+![3-step wizard generating fictional PDFs and Excel data files](docs/images/wizard.png)
+-->
 
 ---
 
@@ -15,38 +63,33 @@ A Windows desktop app that generates **fictional** PDFs, Word docs, HTML files, 
 
 No Python required. Works on Windows 10 and Windows 11.
 
-> **Blank white screen after launch?** Your machine may be missing the Microsoft Edge WebView2 Runtime — this is required by the app. [Download it free from Microsoft](https://developer.microsoft.com/en-us/microsoft-edge/webview2/) and reinstall. See [Troubleshooting](docs/TROUBLESHOOTING.md) for more help.
+> **Blank white screen after launch?** Your machine may be missing the
+> Microsoft Edge WebView2 Runtime — this is required by the app.
+> [Download it free from Microsoft](https://developer.microsoft.com/en-us/microsoft-edge/webview2/)
+> and reinstall. See [Troubleshooting](docs/TROUBLESHOOTING.md) for more help.
 
 ---
 
-## Features
+## How It Works
 
-- 3-step wizard: **Mode & Type → Settings → Generate**
-- **Document types** (PDF / Word `.docx` / HTML)
-  - Invoice
-  - Purchase Order
-  - Intake Form
-  - SOP
-  - Contract
-  - Offer Letter
-- **Data types** (Excel `.xlsx` — automatic, no format selection needed)
-  - Customer Records
-  - Vendor Master
-  - Transactions
-  - Employee Records
-  - Inventory
-  - Messy Data (nulls, dupes, bad formatting — for cleanup testing)
-- All org names, addresses, contacts, and party info are **randomly generated**
-- Choose your own output folder via folder picker
-- Open generated files directly from the app
+Three steps, one folder of test files at the end.
 
----
-
-## How to Use
+<!--
+VISUAL PLACEMENT 3 — Simple workflow diagram
+Future path: docs/images/workflow.svg (preferred) or docs/images/workflow.png
+Alt text: Choose file types and settings, generate fictional documents and data, use in QA demos and training
+To create: a clean horizontal flow diagram showing:
+  [Choose Types & Format] → [Generate Fictional Files] → [Use in QA / Demo / Training]
+Keep it friendly and non-technical. Use simple icons for each stage
+(checklist → gear/sparkle → laptop/clipboard). Excalidraw, Figma, or
+a clean Keynote/PowerPoint export works well.
+When ready, replace this comment with:
+![Choose file types and settings, generate fictional documents and data, use in QA demos and training](docs/images/workflow.svg)
+-->
 
 **Step 1 — Mode & Type**
 - Choose **Documents**, **Data Files**, or **Both**
-- Select the types you want (you can pick multiple)
+- Select the types you want (pick as many as you need)
 
 **Step 2 — Settings**
 - Set how many files per type (1–20)
@@ -58,6 +101,44 @@ No Python required. Works on Windows 10 and Windows 11.
 - Confirm your selections in the summary
 - Click **Generate Test Files**
 - Click any file or **Open Output Folder** when done
+
+---
+
+## What You Can Generate
+
+**Documents** (PDF / Word `.docx` / HTML)
+
+- Invoice
+- Purchase Order
+- Intake Form
+- SOP
+- Contract
+- Offer Letter
+
+**Data files** (Excel `.xlsx`)
+
+- Customer Records
+- Vendor Master
+- Transactions
+- Employee Records
+- Inventory
+- Messy Data — nulls, duplicates, bad formatting (great for cleanup testing)
+
+Every org name, address, contact, and party detail is randomly generated
+per file. Pick an output folder, open files directly from the app when
+generation finishes.
+
+---
+
+## Who This Is For
+
+- **QA engineers** who need varied, realistic test files without scrubbing real data
+- **Sales and solutions teams** building demos that can't use customer documents
+- **Trainers and bootcamps** running data-cleaning, document-processing, or migration exercises
+- **Developers** testing import pipelines, OCR, parsers, or doc workflows on safe sample data
+
+If you have ever rebuilt the same "fake invoice" by hand for the third
+time this month, this tool is for you.
 
 ---
 
@@ -74,32 +155,26 @@ python main.py
 
 Requires Python 3.11+ and pip.
 
+For building your own EXE or installer, see [INSTALL.md](INSTALL.md).
+
 ---
 
 ## Project Structure
 
-```
+```text
 test-data-doc-generator/
-├── main.py                    # App logic, data generation, pywebview API
-├── ui.html                    # Wizard UI (loaded by pywebview at runtime)
-├── installer.iss              # Inno Setup installer script
-├── requirements.txt           # Python dependencies
+├── main.py                    ← app logic, data generation, pywebview API
+├── ui.html                    ← wizard UI (loaded by pywebview at runtime)
+├── installer.iss              ← Inno Setup installer script
+├── requirements.txt           ← Python dependencies
 ├── CHANGELOG.md
-├── INSTALL.md                 # EXE + installer build instructions
+├── INSTALL.md                 ← EXE + installer build instructions
 ├── PRIVACY.md
-├── .gitignore
-├── README.md
+├── README.md                  ← you are here
 └── docs/
     ├── TROUBLESHOOTING.md
     └── CONTRIBUTING.md
 ```
-
----
-
-## Need Help?
-
-- [Installation & Build Guide](INSTALL.md)
-- [Troubleshooting](docs/TROUBLESHOOTING.md)
 
 ---
 
@@ -113,13 +188,28 @@ test-data-doc-generator/
 
 ---
 
-## More Tools
+## Need Help?
 
-**[🧼 Spreadsheet Cleaner](https://github.com/michaelnocito/spreadsheet-cleaner)** — A Python learning project that teaches you to build a real data-cleaning tool, the kind used in professional data migration work. Three layers: Basic, Intermediate, and Advanced.
+- [Installation & Build Guide](INSTALL.md)
+- [Troubleshooting](docs/TROUBLESHOOTING.md)
+- [Changelog](CHANGELOG.md)
+- [Contributing](docs/CONTRIBUTING.md)
 
 ---
 
-If this project saved you time, the best thing you can do is [⭐ star the repo](https://github.com/michaelnocito/test-data-doc-generator) — it helps others find it.
+## More Tools
+
+**[🧼 Spreadsheet Cleaner](https://github.com/michaelnocito/spreadsheet-cleaner)** —
+A Python learning project that teaches you to build a real
+data-cleaning tool, the kind used in professional data migration work.
+Three layers: Basic, Intermediate, and Advanced. Pairs perfectly with
+the **Messy Data** output from this generator.
+
+---
+
+If this project saved you time, the best thing you can do is
+[⭐ star the repo](https://github.com/michaelnocito/test-data-doc-generator)
+— it helps others find it.
 
 If you'd like to support the work, a coffee is always appreciated but never expected.
 
