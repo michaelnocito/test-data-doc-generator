@@ -19,9 +19,10 @@ dist/
 build/
 *.spec
 
-# Output folders — never commit generated test files
+# Output folders — never commit generated test files or installer artifacts
 sample_docs/
 output/
+Output/
 
 # OS
 .DS_Store

@@ -68,16 +68,12 @@ When ready, replace this comment with:
 
 ## ⬇️ Download & Install (Windows)
 
-1. Go to [**Releases**](https://github.com/michaelnocito/recordforge/releases)
-2. Download `TestDataDocGeneratorSetup.exe`
+1. Go to [**Releases**](https://github.com/michaelnocito/recordforge/releases/latest)
+2. Download `RecordForgeSetup.exe`
 3. Double-click the installer and follow the wizard (Next → Next → Finish)
 4. Launch from the **Desktop shortcut** or **Start Menu**
 
 You do not need Python for this path. Works on Windows 10 and Windows 11.
-
-> **Note on the installer filename:** The installer is named
-> `TestDataDocGeneratorSetup.exe` — this reflects the project's previous
-> name. That is the correct file. It installs RecordForge.
 
 > **Blank white screen after launch?** Your machine may be missing the
 > Microsoft Edge WebView2 Runtime — this is required by the app.
