@@ -9,7 +9,8 @@ import os
 import subprocess
 import sys
 from pathlib import Path
-from tkinter import Tk, filedialog
+
+import webview
 
 import recordforge as rf
 from recordforge.generators.data import DATA_REGISTRY
@@ -38,13 +39,14 @@ def open_path(path: str) -> bool:
 
 class API:
     def choose_folder(self) -> str | None:
-        """Open a folder picker dialog and return the selected path."""
-        root = Tk()
-        root.withdraw()
-        root.attributes("-topmost", True)
-        folder = filedialog.askdirectory()
-        root.destroy()
-        return folder or None
+        """Open a folder picker using pywebview's native dialog (avoids tkinter/WebView2 conflict)."""
+        windows = webview.windows
+        if not windows:
+            return None
+        result = windows[0].create_file_dialog(webview.FOLDER_DIALOG)
+        if result:
+            return result[0]
+        return None
 
     def open_path(self, path: str) -> bool:
         """Open a file with its default OS handler."""
