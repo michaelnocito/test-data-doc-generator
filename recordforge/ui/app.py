@@ -1,8 +1,8 @@
 """pywebview API bridge for the RecordForge desktop UI.
 
 Preserves the exact JSON contract from v1:
-  generate() → {"success": bool, "files": list[str], "folder": str}
-             or {"success": false, "error": str, "files": []}
+  generate() → {"success": True, "files": list[str], "folder": str}
+             or {"success": False, "error": str, "files": []}
 """
 
 import os
@@ -11,8 +11,9 @@ import sys
 from pathlib import Path
 from tkinter import Tk, filedialog
 
-from recordforge import generate
-from recordforge.core.models import GeneratedDoc
+import recordforge as rf
+from recordforge.generators.data import DATA_REGISTRY
+from recordforge.generators.documents import DOCUMENT_REGISTRY
 
 
 def sanitize_filename(s: str) -> str:
@@ -59,4 +60,41 @@ class API:
         Returns {"success": True, "files": [...], "folder": str}
              or {"success": False, "error": str, "files": []}
         """
-        ...
+        try:
+            mode = payload.get("mode", "documents")
+            selected = payload.get("docTypes", [])
+            qty = max(1, int(payload.get("quantity", 1)))
+            fmt = (payload.get("format") or "").lower().strip()
+            out_folder = (
+                payload.get("outputFolder")
+                or str(Path.home() / "Documents" / "recordforge")
+            )
+
+            if out_folder.startswith("~/"):
+                out_folder = str(Path.home() / out_folder[2:])
+
+            out_dir = Path(out_folder)
+            out_dir.mkdir(parents=True, exist_ok=True)
+
+            doc_keys = [t for t in selected if t in DOCUMENT_REGISTRY]
+            data_keys = [t for t in selected if t in DATA_REGISTRY]
+            wants_docs = mode in ("documents", "both")
+            wants_data = mode in ("data", "both")
+            generated_files: list[str] = []
+
+            if wants_docs:
+                if fmt not in {"pdf", "docx", "html"}:
+                    raise ValueError("Choose a document format before generating documents.")
+                for doc_type in doc_keys:
+                    docs = rf.generate(type=doc_type, format=fmt, count=qty, output=out_folder)
+                    generated_files.extend(str(d.path) for d in docs)
+
+            if wants_data:
+                for dataset in data_keys:
+                    docs = rf.generate(type=dataset, format="xlsx", count=qty, output=out_folder)
+                    generated_files.extend(str(d.path) for d in docs)
+
+            return {"success": True, "files": generated_files, "folder": str(out_dir)}
+
+        except Exception as exc:
+            return {"success": False, "error": str(exc), "files": []}

@@ -5,6 +5,8 @@ random globals.
 """
 
 import random
+import secrets
+from datetime import date, timedelta
 from decimal import Decimal
 from typing import Literal
 
@@ -83,7 +85,7 @@ LAST_NAMES: list[str] = [
     "Parker", "Bailey", "Reed", "Coleman", "Jenkins", "Perry", "Powell",
     "Long", "Patterson", "Hughes", "Flores", "Washington", "Butler",
     "Simmons", "Foster", "Gonzalez", "Bryant", "Alexander", "Russell",
-    "Griffin", "Diaz", "Hayes", "Myers", "Ford", "Hamilton", "Graham",
+    "Griffin", "Diaz", "Myers", "Ford", "Hamilton", "Graham",
     "Sullivan", "Wallace", "Woods", "Cole", "West", "Jordan", "Owens",
     "Reynolds", "Fisher", "Ellis", "Harrison", "Gibson", "Mcdonald",
     "Cruz", "Marshall", "Ortiz", "Gomez", "Murray", "Freeman", "Wells",
@@ -105,8 +107,8 @@ PRODUCTS: list[str] = [
     "Barcode Scanner", "Thermal Printer", "External SSD 1TB", "RAM Module 16GB",
     "Cat6 Ethernet Cable 50ft", "Patch Panel 24-Port", "Rack Mount Cabinet",
     "Surge Protector 8-Outlet", "Cable Management Kit", "KVM Switch 4-Port",
-    "Laser Printer Toner Cartridge", "Shredder Cross-Cut", "Projector Lumens 3500",
-    "Whiteboard 4x6", "Conference Phone", "Headset Noise-Cancelling",
+    "Laser Printer Toner Cartridge", "Shredder Cross-Cut", "Projector 3500 Lumens",
+    "Whiteboard 4x6ft", "Conference Phone", "Headset Noise-Cancelling",
     "Tablet 10-inch", "Wireless Access Point", "Firewall Appliance",
     "Server RAM 32GB",
 ]
@@ -125,42 +127,65 @@ SERVICES: list[str] = [
     "Stakeholder Workshop", "Post-Go-Live Support", "Annual Maintenance",
 ]
 
+_EMAIL_PREFIXES = ["info", "contact", "hello", "admin", "support", "billing"]
+
 
 # --- Helpers ---
 
+def sanitize_filename(s: str) -> str:
+    """Preserve v1 sanitize_filename behavior exactly."""
+    s = "".join(ch if ch.isalnum() or ch in "._-" else "_" for ch in str(s).strip())
+    return s[:100] or "output"
+
+
 def rand_company(rng: random.Random) -> str:
     """Generate a random fictional company name."""
-    ...
+    return f"{rng.choice(FIRST_WORDS)} {rng.choice(INDUSTRY_WORDS)} {rng.choice(CORP_SUFFIXES)}"
 
 
 def rand_person(rng: random.Random) -> str:
     """Generate a random fictional full name."""
-    ...
+    return f"{rng.choice(FIRST_NAMES)} {rng.choice(LAST_NAMES)}"
 
 
 def rand_phone(rng: random.Random) -> str:
     """Generate a random US phone number string."""
-    ...
+    return f"({rng.randint(200, 989)}) {rng.randint(200, 989)}-{rng.randint(1000, 9999)}"
 
 
 def rand_address(rng: random.Random) -> tuple[str, str]:
     """Return (street_line, city_state_zip) tuple."""
-    ...
+    city, state = rng.choice(CITIES)
+    street = f"{rng.randint(100, 9999)} {rng.choice(STREETS)} {rng.choice(STREET_TYPES)}"
+    return street, f"{city}, {state} {rng.randint(10000, 99999)}"
 
 
 def rand_email(rng: random.Random, company_name: str) -> str:
     """Derive a plausible email address from a company name."""
-    ...
+    slug = "".join(ch.lower() for ch in company_name.split()[0] if ch.isalnum())
+    domain = rng.choice(EMAIL_DOMAINS)
+    prefix = rng.choice(_EMAIL_PREFIXES + [slug])
+    return f"{prefix}@{domain}"
 
 
 def rand_party(rng: random.Random) -> Party:
     """Build a fully populated Party instance."""
-    ...
+    company = rand_company(rng)
+    a1, a2 = rand_address(rng)
+    return Party(
+        name=company,
+        address1=a1,
+        address2=a2,
+        phone=rand_phone(rng),
+        email=rand_email(rng, company),
+    )
 
 
 def rand_date_pair(rng: random.Random) -> tuple[str, str]:
     """Return (doc_date, due_date) strings, due_date always after doc_date."""
-    ...
+    doc_date = date.today() + timedelta(days=rng.randint(-60, 0))
+    due_date = doc_date + timedelta(days=rng.randint(15, 45))
+    return doc_date.strftime("%B %d, %Y"), due_date.strftime("%B %d, %Y")
 
 
 def rand_line_items(
@@ -173,4 +198,15 @@ def rand_line_items(
     Products: unit price $15–$500, quantity 1–50.
     Services: unit price $500–$8000, quantity 1–5.
     """
-    ...
+    pool = PRODUCTS if kind == "products" else SERVICES
+    chosen = rng.sample(pool, min(count, len(pool)))
+    items = []
+    for desc in chosen:
+        if kind == "products":
+            qty = rng.randint(1, 50)
+            unit_price = Decimal(rng.randint(15, 500))
+        else:
+            qty = rng.randint(1, 5)
+            unit_price = Decimal(rng.randint(500, 8000))
+        items.append(LineItem(description=desc, quantity=qty, unit_price=unit_price))
+    return items
