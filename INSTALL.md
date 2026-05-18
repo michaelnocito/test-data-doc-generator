@@ -9,17 +9,13 @@ how you want to use it.
 
 The fastest path. Download, click, generate. No Python on your machine.
 
-Grab the latest installer from the [Releases page](https://github.com/michaelnocito/recordforge/releases).
+Grab the latest installer from the [Releases page](https://github.com/michaelnocito/recordforge/releases/latest).
 
-> **Note on the installer filename:** The installer file is named
-> `TestDataDocGeneratorSetup.exe` — this reflects the project's previous
-> name. That is the correct file. It installs RecordForge.
-
-1. Double-click `TestDataDocGeneratorSetup.exe`
+1. Double-click `RecordForgeSetup.exe`
 2. Click **Next** through the install wizard
 3. Click **Finish** — optionally launch the app immediately
 4. Find **RecordForge** in your **Start Menu** or on your **Desktop**
-5. To uninstall: Windows Settings → Apps → search "Test Data" → Uninstall
+5. To uninstall: Windows Settings → Apps → search "RecordForge" → Uninstall
 
 You do not need Python for this path.
 
