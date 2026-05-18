@@ -43,6 +43,7 @@ body{margin:0;font-family:'Segoe UI',system-ui,-apple-system,Roboto,sans-serif;b
 .output-file{background:#edf5ee;border-radius:8px;border:1px solid #c7ddc9;padding:8px 10px;margin-bottom:6px;display:flex;align-items:center;gap:8px}
 .output-open-btn{margin-left:auto;font-size:11px;border:none;background:none;color:#4a7c4e;text-decoration:underline;cursor:pointer}
 .app-footer{text-align:center;padding:16px;font-size:11px;color:#9a9187;border-top:1px solid #ece7de}
+.link-btn{background:none;border:none;padding:0;font:inherit;font-size:11px;color:#c27a3a;cursor:pointer;text-decoration:underline}
 @media(max-width:640px){
   .mode-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
   .type-grid{grid-template-columns:1fr}
@@ -183,7 +184,11 @@ body{margin:0;font-family:'Segoe UI',system-ui,-apple-system,Roboto,sans-serif;b
   </div>
 </main>
 
-<footer class="app-footer">All output is fictional and for testing / demo use only.</footer>
+<footer class="app-footer">
+  All output is fictional and for testing / demo use only.<br>
+  <span id="appVersion">RecordForge</span> &middot;
+  <button type="button" class="link-btn" onclick="checkForUpdates()">Check for Updates</button>
+</footer>
 </div>
 
 <script>
@@ -325,6 +330,22 @@ function openPath(path){
     window.pywebview.api.open_folder(path);
   }
 }
+
+function checkForUpdates(){
+  if(window.pywebview && window.pywebview.api && window.pywebview.api.open_releases){
+    window.pywebview.api.open_releases();
+  }else{
+    window.open('https://github.com/michaelnocito/recordforge/releases/latest','_blank');
+  }
+}
+
+window.addEventListener('pywebviewready', function(){
+  if(window.pywebview && window.pywebview.api && window.pywebview.api.app_version){
+    window.pywebview.api.app_version().then(function(v){
+      document.getElementById('appVersion').textContent = 'RecordForge v' + v;
+    });
+  }
+});
 </script>
 </body>
 </html>

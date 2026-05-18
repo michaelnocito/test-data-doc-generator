@@ -5,9 +5,9 @@ from typing import Optional
 
 import typer
 
-app = typer.Typer(name="recordforge", help="Generate synthetic documents and data files.")
+from recordforge import __version__
 
-_VERSION = "2.0.0"
+app = typer.Typer(name="recordforge", help="Generate synthetic documents and data files.")
 
 
 @app.command()
@@ -48,4 +48,4 @@ def list_types() -> None:
 @app.command()
 def version() -> None:
     """Print the RecordForge version."""
-    typer.echo(f"RecordForge {_VERSION}")
+    typer.echo(f"RecordForge {__version__}")

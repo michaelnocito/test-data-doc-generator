@@ -8,13 +8,17 @@ Preserves the exact JSON contract from v1:
 import os
 import subprocess
 import sys
+import webbrowser
 from pathlib import Path
 
 import webview
 
 import recordforge as rf
+from recordforge import __version__
 from recordforge.generators.data import DATA_REGISTRY
 from recordforge.generators.documents import DOCUMENT_REGISTRY
+
+RELEASES_URL = "https://github.com/michaelnocito/recordforge/releases/latest"
 
 
 def sanitize_filename(s: str) -> str:
@@ -55,6 +59,22 @@ class API:
     def open_folder(self, path: str) -> bool:
         """Open a folder in the OS file explorer."""
         return open_path(path)
+
+    def app_version(self) -> str:
+        """Return the installed RecordForge version. No network call."""
+        return __version__
+
+    def open_releases(self) -> bool:
+        """Hand the GitHub Releases URL to the OS browser.
+
+        The app makes no network request itself — the browser does, the
+        same as the user clicking a hyperlink. Keeps the offline guarantee.
+        """
+        try:
+            webbrowser.open(RELEASES_URL)
+            return True
+        except Exception:
+            return False
 
     def generate(self, payload: dict) -> dict:
         """Generate files from the UI wizard payload.

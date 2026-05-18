@@ -224,7 +224,7 @@ recordforge/
 ## Safety & Privacy
 
 - No real personal data is ever used in generated output
-- No network calls — fully offline
+- No network calls — generation is fully offline (the optional **Check for Updates** button just opens the Releases page in your browser)
 - User-entered output folder paths are not stored or transmitted
 - Generated files stay on your machine in the folder you choose
 - See [PRIVACY.md](PRIVACY.md) for full details
