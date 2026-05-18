@@ -1,4 +1,4 @@
-# Test Data & Document Generator
+# RecordForge
 
 ### Generate realistic test files in seconds. No fake data leaks.
 
@@ -7,13 +7,13 @@ A Windows desktop app by Michael Nocito.
 <!--
 VISUAL PLACEMENT 1 — Hero banner
 Future path: docs/images/hero-banner.png
-Alt text: Test Data & Document Generator — fictional PDFs, Word docs, HTML, and Excel for QA and demos
+Alt text: RecordForge — fictional PDFs, Word docs, HTML, and Excel for QA and demos
 To create: a wide hero banner (~1600×500). Left side shows stacked
 sample outputs (an invoice PDF, a contract Word doc, and an Excel
 sheet with customer rows); right side shows the 3-step wizard UI
 (Mode & Type → Settings → Generate). Project name + tagline overlaid.
 When ready, replace this comment with:
-![Test Data & Document Generator — fictional PDFs, Word docs, HTML, and Excel for QA and demos](docs/images/hero-banner.png)
+![RecordForge — fictional PDFs, Word docs, HTML, and Excel for QA and demos](docs/images/hero-banner.png)
 -->
 
 ---
