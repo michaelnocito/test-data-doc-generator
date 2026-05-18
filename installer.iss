@@ -1,20 +1,22 @@
 [Setup]
-AppName=Test Data & Document Generator
-AppVersion=1.0.0
+AppName=RecordForge
+AppVersion=2.0.0
 AppPublisher=Michael Nocito
-DefaultDirName={autopf}\TestDataDocGenerator
-DefaultGroupName=Test Data & Document Generator
-OutputBaseFilename=TestDataDocGeneratorSetup
+AppPublisherURL=https://github.com/michaelnocito/recordforge
+AppSupportURL=https://github.com/michaelnocito/recordforge/issues
+DefaultDirName={autopf}\RecordForge
+DefaultGroupName=RecordForge
+OutputBaseFilename=RecordForgeSetup
 Compression=lzma
 SolidCompression=yes
 WizardStyle=modern
 
 [Files]
-Source: "dist\TestDataDocGenerator.exe"; DestDir: "{app}"; Flags: ignoreversion
+Source: "dist\RecordForge.exe"; DestDir: "{app}"; Flags: ignoreversion
 
 [Icons]
-Name: "{group}\Test Data & Document Generator"; Filename: "{app}\TestDataDocGenerator.exe"
-Name: "{commondesktop}\Test Data & Document Generator"; Filename: "{app}\TestDataDocGenerator.exe"
+Name: "{group}\RecordForge"; Filename: "{app}\RecordForge.exe"
+Name: "{commondesktop}\RecordForge"; Filename: "{app}\RecordForge.exe"
 
 [Run]
-Filename: "{app}\TestDataDocGenerator.exe"; Description: "Launch Test Data & Document Generator"; Flags: nowait postinstall skipifsilent
+Filename: "{app}\RecordForge.exe"; Description: "Launch RecordForge"; Flags: nowait postinstall skipifsilent
