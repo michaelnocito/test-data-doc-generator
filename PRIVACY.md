@@ -24,7 +24,9 @@ All generated content — names, addresses, phone numbers, company names, dollar
 
 ## Network activity
 
-This app makes **zero network calls**. It runs entirely offline. No data is sent to any server, API, or external service.
+This app makes **zero network calls**. All document and data generation runs entirely offline. No data is ever sent to any server, API, or external service.
+
+The optional **Check for Updates** button is the single outward action, and it is opt-in. Clicking it opens the project's GitHub Releases page in your default web browser — the app hands off a URL exactly like clicking a hyperlink. The app itself fetches, downloads, and transmits nothing; no information about you, your machine, or your generated files is included or sent.
 
 ---
 

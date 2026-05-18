@@ -5,6 +5,8 @@ from pathlib import Path
 from recordforge.core.models import GeneratedDoc
 from recordforge.core.seed import set_seed
 
+__version__ = "2.0.0"
+
 
 def generate(
     type: str,
@@ -71,4 +73,4 @@ def list_types() -> dict[str, list[str]]:
     }
 
 
-__all__ = ["generate", "list_types", "set_seed", "GeneratedDoc"]
+__all__ = ["generate", "list_types", "set_seed", "GeneratedDoc", "__version__"]
