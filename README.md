@@ -2,7 +2,7 @@
 
 ### Generate realistic test files in seconds. No fake data leaks.
 
-A Windows desktop app by Michael Nocito.
+A Windows desktop app and Python package by Michael Nocito.
 
 <!--
 VISUAL PLACEMENT 1 — Hero banner
@@ -38,9 +38,9 @@ Pick whichever fits you. Both produce the same files.
 - **Desktop app (Windows installer)** — You can run it without Python.
   Download, click, generate files. Jump to
   [Download & Install](#%EF%B8%8F-download--install-windows).
-- **Run from Python source** — You can also use the source when you
-  want to read the code, customize it, extend it, or learn from it.
-  Jump to [Run from Source](#run-from-source-developers).
+- **Python package** — Install with pip, use the CLI or the Python API,
+  extend it with your own types.
+  Jump to [Run from Python](#run-from-python-developers).
 
 ---
 
@@ -68,12 +68,16 @@ When ready, replace this comment with:
 
 ## ⬇️ Download & Install (Windows)
 
-1. Go to [**Releases**](https://github.com/michaelnocito/test-data-doc-generator/releases)
+1. Go to [**Releases**](https://github.com/michaelnocito/recordforge/releases)
 2. Download `TestDataDocGeneratorSetup.exe`
 3. Double-click the installer and follow the wizard (Next → Next → Finish)
 4. Launch from the **Desktop shortcut** or **Start Menu**
 
 You do not need Python for this path. Works on Windows 10 and Windows 11.
+
+> **Note on the installer filename:** The installer is named
+> `TestDataDocGeneratorSetup.exe` — this reflects the project's previous
+> name. That is the correct file. It installs RecordForge.
 
 > **Blank white screen after launch?** Your machine may be missing the
 > Microsoft Edge WebView2 Runtime — this is required by the app.
@@ -107,7 +111,7 @@ When ready, replace this comment with:
 - Set how many files per type (1–20)
 - Choose a document format: **PDF**, **Word .docx**, or **HTML**
   - Skip this if you are only generating data files
-- Set your output folder (defaults to `~/Documents/sample_docs`)
+- Set your output folder (defaults to `~/Documents/recordforge`)
 
 **Step 3 — Review & Generate**
 - Confirm your selections in the summary
@@ -155,19 +159,39 @@ work that matters.
 
 ---
 
-## Run from Source (Developers)
-
-You can also run the Python source directly — handy when you want to
-inspect the code, tweak it, or extend it with your own document types.
-
-```powershell
-git clone https://github.com/michaelnocito/test-data-doc-generator.git
-cd test-data-doc-generator
-pip install -r requirements.txt
-python main.py
-```
+## Run from Python (Developers)
 
 Requires Python 3.11+ and pip.
+
+```powershell
+git clone https://github.com/michaelnocito/recordforge.git
+cd recordforge
+pip install -e .
+```
+
+**CLI:**
+
+```
+recordforge generate --type invoice --format pdf --count 5
+recordforge generate --type customers --format xlsx --count 2
+recordforge list-types
+```
+
+**Python API:**
+
+```python
+from recordforge import generate
+
+docs = generate(type="invoice", format="pdf", count=3, output="./out")
+for doc in docs:
+    print(doc.path)
+```
+
+**Desktop UI:**
+
+```
+python -m recordforge
+```
 
 To build your own EXE or installer, see [INSTALL.md](INSTALL.md).
 
@@ -176,18 +200,23 @@ To build your own EXE or installer, see [INSTALL.md](INSTALL.md).
 ## Project Structure
 
 ```text
-test-data-doc-generator/
-├── main.py                    ← app logic, data generation, pywebview API
-├── ui.html                    ← wizard UI (loaded by pywebview at runtime)
-├── installer.iss              ← Inno Setup installer script
-├── requirements.txt           ← Python dependencies
-├── CHANGELOG.md
-├── INSTALL.md                 ← EXE + installer build instructions
-├── PRIVACY.md
-├── README.md                  ← you are here
-└── docs/
-    ├── TROUBLESHOOTING.md
-    └── CONTRIBUTING.md
+recordforge/
+├── recordforge/
+│   ├── __init__.py              ← public Python API (generate, list_types, set_seed)
+│   ├── __main__.py              ← python -m recordforge → desktop UI
+│   ├── cli.py                   ← Typer CLI
+│   ├── core/                    ← models, RNG, faker helpers, watermark engine
+│   ├── generators/
+│   │   ├── documents/           ← one module per document type
+│   │   └── data/                ← one module per data type
+│   ├── renderers/               ← pdf, docx, html, xlsx
+│   └── ui/                      ← pywebview API bridge + wizard HTML
+├── tests/
+│   └── test_smoke.py
+├── installer.iss                ← Inno Setup script
+├── requirements.txt
+├── pyproject.toml
+└── INSTALL.md                   ← EXE + installer build instructions
 ```
 
 ---
@@ -213,16 +242,18 @@ test-data-doc-generator/
 
 ## More Tools
 
+**[NEXUS — Learn SQL by Solving a Mystery](https://github.com/michaelnocito/nexus-sql-mystery)** —
+A narrative-driven game where you investigate corporate fraud by writing real SQL.
+No slides, no exercises — every query is evidence.
+
 **[🧼 Spreadsheet Cleaner](https://github.com/michaelnocito/spreadsheet-cleaner)** —
-A Python learning project where you build a real data-cleaning tool,
-the kind used in professional data migration work. Three layers: Basic,
-Intermediate, and Advanced. Pairs well with the **Messy Data** output
-from this generator.
+A Python learning project where you build a real data-cleaning tool in three layers.
+Pairs well with the **Messy Data** output from RecordForge.
 
 ---
 
 If this project saved you time, the best thing you can do is
-[⭐ star the repo](https://github.com/michaelnocito/test-data-doc-generator)
+[⭐ star the repo](https://github.com/michaelnocito/recordforge)
 — it helps others find it.
 
 If you'd like to support the work, a coffee is always appreciated but never expected.

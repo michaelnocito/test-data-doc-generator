@@ -4,46 +4,88 @@ All notable changes to this project are documented here.
 
 ---
 
+## [2.0.0] — 2026-05-18
+
+### RecordForge — full refactor and rename
+
+**Package**
+- Refactored v1 monolith (`main.py`) into a proper Python package (`recordforge/`)
+- Installable via `pip install -e .` from repo root
+- Public Python API: `from recordforge import generate, list_types, set_seed`
+- Typer CLI: `recordforge generate`, `recordforge list-types`, `recordforge version`
+- Desktop UI launcher: `python -m recordforge`
+
+**PDF renderer**
+- Replaced raw canvas line-by-line output with `reportlab.platypus` layout engine
+- Full document layout: header block, two-column party block, line items table with alternating shading, computed totals (subtotal / tax / Total Due)
+- Diagonal SAMPLE watermark on every page (72pt Helvetica-Bold, red, 15% opacity)
+- Footer disclaimer on every page
+
+**DOCX renderer**
+- Upgraded from plain paragraphs to structured layout
+- Two-column borderless party table, styled line items table with header row and totals
+
+**HTML renderer**
+- Replaced f-string HTML with Jinja2 template (`renderers/templates/document.html.j2`)
+- CSS diagonal SAMPLE watermark via `body::before`
+
+**Generators**
+- All 6 document types and 6 data types refactored into individual modules
+- Relational integrity: `doc_date` always before `due_date`
+- All financial values computed from `LineItem` dataclasses — no hardcoded dollar strings
+- Faker word lists expanded to 40+ entries each (vs. 10 in v1)
+- Seed control: `set_seed(n)` produces fully reproducible output
+
+**Core**
+- `core/models.py` — typed dataclasses: `Party`, `LineItem`, `DocumentData`, `GeneratedDoc`
+- `core/seed.py` — shared RNG singleton, no global random calls anywhere
+- `core/faker_utils.py` — all `rand_*` helpers, expanded word lists
+- `core/watermark.py` — watermark engine decoupled from renderer
+
+**Tests**
+- 21 smoke tests: all generators, all renderers, watermark presence, seed reproducibility
+
+---
+
 ## [1.0.0] — 2026-05-12
 
 ### First stable release
 
 **App**
 - 3-step wizard UI (Mode & Type → Settings → Generate)
-- pywebview desktop window loads `ui.html` as rendered HTML via `html=` parameter
-- `debug=False` for clean production window — no dev tools popup
+- pywebview desktop window loads `ui.html` via `html=` parameter
+- `debug=False` for clean production window
 
 **Document generation**
 - Invoice, Purchase Order, Intake Form, SOP, Contract, Offer Letter
 - Export formats: PDF (ReportLab), Word .docx (python-docx), HTML
-- All party / org data randomly generated — no manual input required
+- All party / org data randomly generated
 
 **Data generation**
 - Customer Records, Vendor Master, Transactions, Employee Records, Inventory, Messy Data
-- All data types export as Excel `.xlsx` (openpyxl) automatically
-- Messy Data includes nulls, duplicates, inconsistent casing, bad formatting for cleanup testing
+- All data types export as Excel `.xlsx` (openpyxl)
+- Messy Data includes nulls, duplicates, inconsistent casing for cleanup testing
 
 **Output**
-- Native folder picker dialog for output folder selection
+- Native folder picker dialog
 - Open individual files or output folder directly from the app
 - Random hex token in filenames prevents overwriting
 
 **Distribution**
 - Windows installer built with Inno Setup
 - Start Menu and Desktop shortcuts created on install
-- Uninstaller registered in Windows Settings → Apps
 - Standalone `.exe` also available via PyInstaller
 
 **Safety**
-- Disclaimer row injected into every Excel file
-- Disclaimer block in every document body
-- No real personal data used anywhere
+- Disclaimer row in every Excel file
+- Disclaimer block in every document
 - Fully offline — no network calls
 
 ---
 
 ## Upcoming
 
-- Additional document types (NDA, SOW, Work Order)
+- Additional document types (NDA, SOW, Work Order, bank statement)
+- Scan simulation / OCR noise mode
 - Configurable row count for data sets
-- Dark mode UI toggle
+- Schema import (custom templates via JSON/YAML)
