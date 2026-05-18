@@ -53,7 +53,7 @@ def test_contract_build():
     data = build(_fresh_rng())
     assert data.doc_type == "contract"
     assert len(data.line_items) == 0
-    assert "Flat Fee" in data.notes
+    assert "SERVICES AGREEMENT" in data.notes
 
 
 def test_offer_letter_build():
