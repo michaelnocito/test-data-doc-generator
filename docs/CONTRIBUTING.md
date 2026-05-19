@@ -1,10 +1,10 @@
 # Contributing
 
-This is a private project. Contributions are by invitation only.
+RecordForge is open source and contributions are welcome.
 
-If you are working on the code with access, this guide walks you
-through the rhythm: report cleanly, suggest sharply, ship changes with
-care.
+Whether you're filing a bug report, suggesting a new document type,
+or submitting a pull request — this guide walks you through the rhythm:
+report cleanly, suggest sharply, ship changes with care.
 
 ---
 

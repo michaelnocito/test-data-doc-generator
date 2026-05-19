@@ -2,7 +2,9 @@
 
 ### Generate realistic test files in seconds. No fake data leaks.
 
-A Windows desktop app and Python package by Michael Nocito.
+A Windows desktop app and Python package by [Michael Nocito](https://www.linkedin.com/in/michaelnocito).
+
+**[🌐 recordforge website](https://michaelnocito.github.io/recordforge/)** &nbsp;·&nbsp; [Releases](https://github.com/michaelnocito/recordforge/releases) &nbsp;·&nbsp; [Troubleshooting](docs/TROUBLESHOOTING.md)
 
 <!--
 VISUAL PLACEMENT 1 — Hero banner
@@ -236,15 +238,17 @@ recordforge/
 
 ---
 
-## More Tools
+## More from Michael Nocito
 
-**[NEXUS — Learn SQL by Solving a Mystery](https://github.com/michaelnocito/nexus-sql-mystery)** —
-A narrative-driven game where you investigate corporate fraud by writing real SQL.
-No slides, no exercises — every query is evidence.
+**[🕵️ NEXUS — Learn SQL by Solving a Mystery](https://michaelnocito.github.io/nexus-sql-mystery/)** —
+A free game where you investigate corporate fraud by writing real SQL against a live database.
+No slides, no exercises — every query is evidence. Two full seasons.
 
-**[🧼 Spreadsheet Cleaner](https://github.com/michaelnocito/spreadsheet-cleaner)** —
-A Python learning project where you build a real data-cleaning tool in three layers.
-Pairs well with the **Messy Data** output from RecordForge.
+**[🧼 Spreadsheet Cleaner](https://michaelnocito.github.io/spreadsheet-cleaner/)** —
+A beginner Python project where you build a real data-cleaning tool layer by layer.
+The Messy Data output from RecordForge pairs directly with this cleaner.
+
+**[LinkedIn](https://www.linkedin.com/in/michaelnocito)** — data analyst · 8 years enterprise implementation
 
 ---
 
